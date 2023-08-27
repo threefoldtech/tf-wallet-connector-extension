@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Threefold Wallet Connector Extension",
+  "version": "1.0.0",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "permissions": [],
+  "content_scripts": [
+    {
+      "matches": ["http://localhost:5173/*"],
+      "js": ["inject.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": ["http://localhost:5173/*"],
+      "resources": ["store.js"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  }
+}
