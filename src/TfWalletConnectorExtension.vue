@@ -24,10 +24,6 @@
           <connect-wallet />
         </div>
       </v-card-text>
-      <v-divider />
-      <v-card-actions class="justify-end">
-        <v-btn variant="tonal" color="primary">Connect</v-btn>
-      </v-card-actions>
     </v-card>
   </main>
 </template>
