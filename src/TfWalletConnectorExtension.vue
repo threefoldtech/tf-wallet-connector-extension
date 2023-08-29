@@ -1,5 +1,5 @@
 <template>
-  <main :style="{ width: '800px' }">
+  <main :style="{ width: '785px' }">
     <v-card class="rounded-0">
       <v-card-title>Connect your TFChain Wallet</v-card-title>
       <v-card-subtitle>
@@ -14,9 +14,9 @@
         get started.
       </v-card-subtitle>
       <v-divider class="mt-4" />
-      <v-card-text>
+      <v-card-text :style="{ overflowY: 'auto', height: '515px' }">
         <v-tabs align-tabs="center" color="primary" v-model="activeTab">
-          <v-tab>Login</v-tab>
+          <!-- <v-tab>Login</v-tab> -->
           <v-tab>Connect Your Wallet</v-tab>
         </v-tabs>
 

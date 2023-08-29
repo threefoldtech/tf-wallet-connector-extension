@@ -1,18 +1,18 @@
 <template>
   <slot
     :validationProps="{
-      onBlur: touched ? undefined : onBlur,
-      'error-messages': errorMessage,
-      error: !!errorMessage,
-      hint: validating ? 'validating...' : undefined
+      onBlur: touched || disabled ? undefined : onBlur,
+      'error-messages': disabled ? undefined : errorMessage,
+      error: !!errorMessage && !disabled,
+      hint: validatingInput && !disabled ? 'validating...' : undefined
     }"
   ></slot>
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue'
-import { watch } from 'vue'
-import { ref } from 'vue'
+import { type PropType, watch, ref } from 'vue'
+
+import { type ValidateField } from '@/hooks'
 
 export default {
   name: 'ValidateField',
@@ -32,6 +32,8 @@ export default {
     },
     modelValue: Boolean,
     error: String,
+    validating: Boolean,
+    disabled: Boolean,
     deps: {
       type: Array,
       required: false,
@@ -39,10 +41,11 @@ export default {
     }
   },
   emits: {
-    'update:model-value': (value: boolean) => value,
-    'update:error': (error: string) => error
+    'update:model-value': (value: boolean) => true,
+    'update:error': (error: string) => true,
+    'update:validating': (validating: boolean) => true
   },
-  setup(props, { emit }) {
+  setup(props, { emit, expose }) {
     const touched = ref(false)
     async function onBlur() {
       touched.value = true
@@ -73,10 +76,18 @@ export default {
 
     const errorMessage = ref('')
     function setError(newError: string) {
-      errorMessage.value = newError
-      emit('update:error', newError)
+      if (errorMessage.value !== newError) {
+        errorMessage.value = newError
+        emit('update:error', newError)
+      }
     }
-    const validating = ref(false)
+
+    const validatingInput = ref(false)
+    function setValidating(newValidating: boolean) {
+      validatingInput.value = newValidating
+      emit('update:validating', newValidating)
+    }
+
     async function validate() {
       setError('')
       if (!props.value && !props.required) {
@@ -86,8 +97,8 @@ export default {
 
       for (const rule of props.rules) {
         const initRes = rule(props.value)
-        if (initRes instanceof Promise && !validating.value) {
-          validating.value = true
+        if (initRes instanceof Promise && !validatingInput.value) {
+          setValidating(true)
         }
 
         const res = await initRes
@@ -98,8 +109,8 @@ export default {
         }
       }
 
-      if (validating.value) {
-        validating.value = false
+      if (validatingInput.value) {
+        setValidating(false)
       }
 
       if (!errorMessage.value) {
@@ -107,7 +118,11 @@ export default {
       }
     }
 
-    return { touched, onBlur, errorMessage, validating }
+    expose(<ValidateField>{
+      validate
+    })
+
+    return { touched, onBlur, errorMessage, validatingInput }
   }
 }
 </script>

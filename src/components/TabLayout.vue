@@ -6,8 +6,7 @@
   <slot></slot>
 
   <template v-if="$slots['actions']">
-    <v-divider class="mt-4" />
-    <div class="d-flex justify-end mt-4">
+    <div class="d-flex justify-center mt-2">
       <slot name="actions"></slot>
     </div>
   </template>
