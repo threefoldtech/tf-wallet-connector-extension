@@ -2,13 +2,19 @@
 
 /** @type { import("../src/global-components") } */
 
-/* Inject `inject.js` to ui */
-{
+/**
+ * @param { string } name
+ */
+function injectScript(name) {
   const script = document.createElement('script')
   script.setAttribute('type', 'text/javascript')
-  script.setAttribute('src', window.chrome.runtime.getURL('inject.js'))
+  script.setAttribute('src', window.chrome.runtime.getURL(`${name}.js`))
   document.body.appendChild(script)
 }
+
+/* Inject `inject.js` & `cmds.js` to ui */
+injectScript('cmds')
+injectScript('inject')
 
 /* Listen to message from extension */
 window.chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {

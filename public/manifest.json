@@ -18,7 +18,7 @@
   "web_accessible_resources": [
     {
       "matches": ["http://localhost:5173/*"],
-      "resources": ["inject.js"]
+      "resources": ["cmds.js", "inject.js"]
     }
   ],
   "content_security_policy": {
