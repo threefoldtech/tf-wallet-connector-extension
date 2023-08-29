@@ -9,13 +9,16 @@
   "content_scripts": [
     {
       "matches": ["http://localhost:5173/*"],
-      "js": ["inject.js"]
+      "js": ["cmds.js", "content.js"]
     }
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "web_accessible_resources": [
     {
       "matches": ["http://localhost:5173/*"],
-      "resources": ["store.js"]
+      "resources": ["inject.js"]
     }
   ],
   "content_security_policy": {

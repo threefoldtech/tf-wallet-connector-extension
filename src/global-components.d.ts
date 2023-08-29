@@ -18,3 +18,16 @@ declare module '@vue/runtime-core' {
     $validations: typeof validations
   }
 }
+
+interface TF_WALLET_CONNECTOR_EXTENSION_CMDS {
+  Login: 'LOGIN'
+  Logout: 'LOGOUT'
+  GetSessionStorage: 'GET_SESSION_STORAGE'
+}
+
+declare global {
+  interface Window {
+    $TF_WALLET_CONNECTOR_EXTENSION: 'TF_WALLET_CONNECTOR_EXTENSION'
+    $TF_WALLET_CONNECTOR_EXTENSION_CMDS: TF_WALLET_CONNECTOR_EXTENSION_CMDS
+  }
+}

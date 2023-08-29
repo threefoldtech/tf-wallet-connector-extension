@@ -40,6 +40,7 @@ import { ref } from 'vue'
 
 import ConnectWallet from '@/views/ConnectWallet.vue'
 import { useWalletStore } from '@/stores'
+import { onMounted } from 'vue'
 
 export default {
   name: 'tf-wallet-connector-extension',
@@ -47,6 +48,8 @@ export default {
   setup() {
     const activeTab = ref(0)
     const walletStore = useWalletStore()
+
+    onMounted(walletStore.init)
 
     return { activeTab, walletStore }
   }

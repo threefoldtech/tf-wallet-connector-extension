@@ -1,9 +1,55 @@
-function injectScript(name) {
-  const script = document.createElement('script')
-  script.setAttribute('type', 'text/javascript')
-  script.setAttribute('src', window.chrome.runtime.getURL(`${name}.js`))
-  document.body.appendChild(script)
+// @ts-check
+
+/** @type { import("../src/global-components") } */
+
+class WalletStore {
+  _account = null
+  _subscriptions = []
+
+  subscribe(subscription) {
+    this._subscriptions.push(subscription)
+    subscription(this._account)
+
+    return this.unsubscribe.bind(this, subscription)
+  }
+
+  unsubscribe(subscription) {
+    const index = this._subscriptions.indexOf(subscription)
+    if (index !== -1) {
+      this._subscriptions.splice(index, 1)
+    }
+  }
+
+  _update(account) {
+    if (this._account === account) {
+      return
+    }
+
+    if (this._account && account) {
+      /** @type { any } */
+      const _account = this._account
+      if (_account.mnemonic === account.mnemonic && _account.ssh === account.ssh) {
+        return
+      }
+    }
+
+    this._account = account
+    this._notify()
+  }
+
+  _notify() {
+    this._subscriptions.forEach((fn) => fn(this._account))
+  }
 }
 
-console.log('inject.js')
-injectScript('store')
+window.addEventListener('load', init, { once: true })
+function init() {
+  window[window.$TF_WALLET_CONNECTOR_EXTENSION] = new WalletStore()
+}
+
+/* Listen to message from content.js */
+document.addEventListener(window.$TF_WALLET_CONNECTOR_EXTENSION, handleMessage)
+function handleMessage(/** @type { any}  */ e) {
+  const { detail: data } = e
+  window[window.$TF_WALLET_CONNECTOR_EXTENSION]._update(data)
+}
