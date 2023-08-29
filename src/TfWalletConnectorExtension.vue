@@ -14,7 +14,14 @@
         get started.
       </v-card-subtitle>
       <v-divider class="mt-4" />
-      <v-card-text :style="{ overflowY: 'auto', height: '515px' }">
+      <v-card-text v-if="walletStore.account">
+        {{ walletStore.account }}
+
+        <div class="d-flex justify-end">
+          <v-btn variant="outlined" color="error" @click="walletStore.logout()">Logout</v-btn>
+        </div>
+      </v-card-text>
+      <v-card-text :style="{ overflowY: 'auto', height: '515px' }" v-else>
         <v-tabs align-tabs="center" color="primary" v-model="activeTab">
           <!-- <v-tab>Login</v-tab> -->
           <v-tab>Connect Your Wallet</v-tab>
@@ -29,16 +36,19 @@
 </template>
 
 <script lang="ts">
-import ConnectWallet from '@/views/ConnectWallet.vue'
 import { ref } from 'vue'
+
+import ConnectWallet from '@/views/ConnectWallet.vue'
+import { useWalletStore } from '@/stores'
 
 export default {
   name: 'tf-wallet-connector-extension',
   components: { ConnectWallet },
   setup() {
     const activeTab = ref(0)
+    const walletStore = useWalletStore()
 
-    return { activeTab }
+    return { activeTab, walletStore }
   }
 }
 </script>

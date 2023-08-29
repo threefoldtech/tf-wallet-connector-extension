@@ -122,8 +122,9 @@
 <script lang="ts">
 import { ref, computed } from 'vue'
 
-import { createAccount, activateAccountAndCreateTwin, loadGrid } from '@/utils'
+import { createAccount, activateAccountAndCreateTwin } from '@/utils'
 import { useValidateField } from '@/hooks'
+import { useWalletStore } from '@/stores'
 
 export default {
   name: 'ConnectWallet',
@@ -163,11 +164,10 @@ export default {
 
     const connectable = computed(() => mnemonicValid.value && passwordValid.value && confirmPasswordValid.value) // prettier-ignore
     const connecting = ref(false)
+    const walletStore = useWalletStore()
     async function connect() {
       connecting.value = true
-      const grid = await loadGrid(mnemonic.value)
-      console.log(grid)
-
+      await walletStore.login(mnemonic.value)
       connecting.value = false
     }
 

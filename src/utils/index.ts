@@ -1,6 +1,6 @@
 import { BackendStorageType, GridClient, NetworkEnv } from '@threefold/grid_client'
 
-const network = NetworkEnv.dev
+export const network = NetworkEnv.dev
 
 export async function loadGrid(mnemonic: string): Promise<GridClient> {
   const grid = new GridClient({
@@ -33,20 +33,6 @@ export function activateAccountAndCreateTwin(mnemonic: string) {
   grid._connect()
   const relay = grid.getDefaultUrls(network).relay.slice(6)
   return grid.tfchain.activateAccountAndCreateTwin(mnemonic, relay, true)
-}
-
-export function loadBalance(grid: GridClient) {
-  return grid.balance.getMyBalance()
-}
-
-export async function loadProfile(grid: GridClient) {
-  return {
-    mnemonic: grid.clientOptions!.mnemonic,
-    ssh: await readSSH(grid),
-    twinId: grid!.twinId,
-    address: grid.tfclient.address,
-    relay: grid.getDefaultUrls(network).relay.slice(6)
-  }
 }
 
 export async function getMetadata(grid: GridClient): Promise<{ [key: string]: any }> {
