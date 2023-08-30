@@ -1,5 +1,5 @@
 <template>
-  <main :style="{ width: '785px' }">
+  <main :style="{ width: '485px' }">
     <v-card class="rounded-0">
       <v-card-title>Connect your TFChain Wallet</v-card-title>
       <v-card-subtitle>

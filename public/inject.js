@@ -42,10 +42,7 @@ class WalletStore {
   }
 }
 
-window.addEventListener('load', init, { once: true })
-function init() {
-  window[window.$TF_WALLET_CONNECTOR_EXTENSION] = new WalletStore()
-}
+window[window.$TF_WALLET_CONNECTOR_EXTENSION] = new WalletStore()
 
 /* Listen to message from content.js */
 document.addEventListener(window.$TF_WALLET_CONNECTOR_EXTENSION, handleMessage)
