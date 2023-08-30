@@ -2,6 +2,7 @@ import type PasswordField from './components/PasswordField.vue'
 import type TabLayout from './components/TabLayout.vue'
 import type ValidateField from './components/ValidateField.vue'
 import type TermsDialog from './components/TermsDialog.vue'
+import type ExtLayout from './components/Layout.vue'
 
 import type * as validations from './validations'
 
@@ -11,6 +12,7 @@ declare module '@vue/runtime-core' {
     TabLayout: typeof TabLayout
     ValidateField: typeof ValidateField
     TermsDialog: typeof TermsDialog
+    ExtLayout: typeof ExtLayout
   }
 
   export interface ComponentCustomProperties {

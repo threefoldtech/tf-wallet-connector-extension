@@ -4,6 +4,7 @@ import PasswordField from '@/components/PasswordField.vue'
 import TabLayout from '@/components/TabLayout.vue'
 import ValidateField from '@/components/ValidateField.vue'
 import TermsDialog from '@/components/TermsDialog.vue'
+import ExtLayout from '@/components/Layout.vue'
 
 import * as $validations from '@/validations'
 
@@ -19,7 +20,8 @@ export const $globalComponents = defineGlobalComponents({
   PasswordField,
   TabLayout,
   ValidateField,
-  TermsDialog
+  TermsDialog,
+  ExtLayout
 })
 
 export function $globalProps(app: App<Element>) {
