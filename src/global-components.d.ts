@@ -18,6 +18,7 @@ declare module '@vue/runtime-core' {
   export interface ComponentCustomProperties {
     $combineProps: (...Object: any[]) => Object
     $validations: typeof validations
+    $copy: (data: string) => void
   }
 }
 

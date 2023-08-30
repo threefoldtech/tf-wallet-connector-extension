@@ -24,11 +24,16 @@
         @update:model-value="$emit('update:search', $event)"
       />
 
-      <v-menu transition="slide-y-transition">
+      <v-menu transition="slide-y-transition" location="bottom right">
         <template v-slot:activator="{ props }">
-          <v-tooltip text="Settings">
+          <v-tooltip text="Settings" :theme="theme.next">
             <template #activator="{ props: tooltipProps }">
-              <v-btn icon="mdi-cog" variant="flat" v-bind="{ ...props, ...tooltipProps }" />
+              <v-btn
+                :theme="theme.current"
+                icon="mdi-cog"
+                variant="flat"
+                v-bind="$combineProps(props, tooltipProps)"
+              />
             </template>
           </v-tooltip>
         </template>
@@ -77,7 +82,7 @@
 
     <v-divider />
 
-    <v-card-text>
+    <v-card-text :style="{ overflowY: 'auto', maxHeight: '510px' }">
       <slot></slot>
     </v-card-text>
   </v-card>

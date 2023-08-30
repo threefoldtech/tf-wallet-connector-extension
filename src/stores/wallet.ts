@@ -1,17 +1,10 @@
 import { defineStore } from 'pinia'
 
 import { network, loadGrid, readSSH, sendMessage } from '@/utils'
+import type { Account } from '@/types'
 
 export interface WalletStore {
   account: Account | null
-}
-
-export interface Account {
-  mnemonic: string
-  twinId: number
-  address: string
-  ssh: string
-  relay: string
 }
 
 export const useWalletStore = defineStore('wallet:store', {
@@ -32,6 +25,8 @@ export const useWalletStore = defineStore('wallet:store', {
     async login(mnemonic: string) {
       const grid = await loadGrid(mnemonic)
       this.$state.account = {
+        name: 'test',
+        visible: true,
         mnemonic,
         ssh: await readSSH(grid),
         twinId: grid.twinId,

@@ -29,4 +29,7 @@ export function $globalProps(app: App<Element>) {
   app.config.globalProperties.$combineProps = (...objs) => {
     return objs.reduce((res, current) => ({ ...res, ...current }), {})
   }
+  app.config.globalProperties.$copy = (data: string) => {
+    window.navigator.clipboard.writeText(data)
+  }
 }
