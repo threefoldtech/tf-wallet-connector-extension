@@ -18,14 +18,14 @@
         <connected-wallet />
       </v-card-text>
 
-      <v-card-text :style="{ overflowY: 'auto', height: '515px' }" v-else>
+      <v-card-text :style="{ overflowY: 'auto', maxHeight: '515px' }" v-else>
         <v-tabs align-tabs="center" color="primary" v-model="activeTab">
-          <!-- <v-tab>Login</v-tab> -->
-          <v-tab>Connect Your Wallet</v-tab>
+          <v-tab v-for="tab in tabs" :key="tab">{{ tab }}</v-tab>
         </v-tabs>
 
         <div class="pt-6">
-          <connect-wallet />
+          <login-existed-wallet v-if="activeTab === 0 && tabs.length === 2" />
+          <connect-wallet v-else />
         </div>
       </v-card-text>
     </v-card>
@@ -36,20 +36,30 @@
 import { ref, onMounted } from 'vue'
 
 import { useWalletStore } from '@/stores'
+import { WALLET_KEY } from '@/constants'
 
 import ConnectWallet from '@/views/ConnectWallet.vue'
 import ConnectedWallet from '@/views/ConnectedWallet.vue'
+import LoginExistedWallet from '@/views/LoginExistedWallet.vue'
+import { computed } from 'vue'
 
 export default {
   name: 'tf-wallet-connector-extension',
-  components: { ConnectWallet, ConnectedWallet },
+  components: { ConnectWallet, ConnectedWallet, LoginExistedWallet },
   setup() {
     const activeTab = ref(0)
     const walletStore = useWalletStore()
 
+    const tabs = computed(() => {
+      walletStore.account
+      return localStorage.getItem(WALLET_KEY) === null
+        ? ['Connect Your Wallet']
+        : ['Login', 'Connect Your Wallet']
+    })
+
     onMounted(walletStore.init)
 
-    return { activeTab, walletStore }
+    return { activeTab, walletStore, tabs }
   }
 }
 </script>

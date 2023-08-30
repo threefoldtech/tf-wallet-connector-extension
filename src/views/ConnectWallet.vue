@@ -122,7 +122,7 @@
 <script lang="ts">
 import { ref, computed } from 'vue'
 
-import { createAccount, activateAccountAndCreateTwin } from '@/utils'
+import { createAccount, activateAccountAndCreateTwin, writeLocalWallet } from '@/utils'
 import { useValidateField } from '@/hooks'
 import { useWalletStore } from '@/stores'
 
@@ -168,6 +168,7 @@ export default {
     async function connect() {
       connecting.value = true
       await walletStore.login(mnemonic.value)
+      writeLocalWallet(mnemonic.value, password.value)
       connecting.value = false
     }
 
