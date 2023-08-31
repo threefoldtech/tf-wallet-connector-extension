@@ -47,7 +47,7 @@
 
           <v-divider />
 
-          <v-list-item to="/new-account">
+          <v-list-item to="/export-accounts">
             <template #prepend>
               <v-icon icon="mdi-export" />
             </template>

@@ -10,6 +10,14 @@ export const $router = createRouter({
     {
       path: '/forget-account/:mnemonic',
       component: () => import('../views/ForgetAccount.vue')
+    },
+    {
+      path: '/export-account/:mnemonic',
+      component: () => import('../views/ExportAccount.vue')
+    },
+    {
+      path: '/export-accounts',
+      component: () => import('../views/ExportAccounts.vue')
     }
   ]
 })

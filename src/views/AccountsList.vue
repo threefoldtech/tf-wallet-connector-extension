@@ -32,7 +32,9 @@ export default {
     const search = ref('')
 
     const accounts = computed(() => {
-      return walletStore.accounts.filter((account) => account.name.includes(search.value))
+      return walletStore.accounts.filter((account) => {
+        return account.name.toLowerCase().includes(search.value.toLowerCase())
+      })
     })
 
     return { search, walletStore, accounts }

@@ -25,9 +25,10 @@
           {{ account.address }}
         </p>
       </div>
-      <div class="d-flex align-center" v-if="!removeActions">
+      <div class="d-flex" :class="{ 'align-center': !removeActions, 'align-end': removeActions }">
         <div>
           <v-btn
+            v-if="!removeActions"
             icon
             size="x-small"
             variant="flat"
@@ -63,8 +64,8 @@
             </template>
           </v-snackbar>
         </div>
-        <v-divider vertical class="mx-2" />
-        <v-menu>
+        <v-divider vertical class="mx-2" v-if="!removeActions" />
+        <v-menu v-if="!removeActions">
           <template #activator="{ props }">
             <v-btn icon="mdi-dots-vertical" size="small" variant="flat" v-bind="props" />
           </template>
@@ -79,7 +80,7 @@
 
             <v-divider />
 
-            <v-list-item to="/export">
+            <v-list-item :to="'/export-account/' + account.mnemonic">
               <template #prepend>
                 <v-icon color="error" icon="mdi-export" />
               </template>
