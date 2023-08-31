@@ -29,6 +29,7 @@
           <v-tooltip text="Settings" :theme="theme.next">
             <template #activator="{ props: tooltipProps }">
               <v-btn
+                :disabled="disableActions"
                 :theme="theme.current"
                 icon="mdi-cog"
                 variant="flat"
@@ -38,7 +39,7 @@
           </v-tooltip>
         </template>
         <v-list>
-          <v-list-item to="/new-account">
+          <v-list-item to="/create-account">
             <template #prepend>
               <v-icon icon="mdi-account-plus" />
             </template>
@@ -96,7 +97,8 @@ export default {
   name: 'ExtLayout',
   props: {
     noLogo: Boolean,
-    search: String
+    search: String,
+    disableActions: Boolean
   },
   emits: {
     'update:search': (query: string) => true || query

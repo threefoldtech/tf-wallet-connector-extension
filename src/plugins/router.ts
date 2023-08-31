@@ -22,6 +22,18 @@ export const $router = createRouter({
     {
       path: '/restore-accounts',
       component: () => import('../views/RestoreAccounts.vue')
+    },
+    {
+      path: '/create-account',
+      component: () => import('../views/CreateAccount.vue')
+    },
+    {
+      path: '/create-account/:mnemonic',
+      component: () => import('../views/CreateAccountPassword.vue')
+    },
+    {
+      path: '/create-account/:mnemonic/:name/:password',
+      component: () => import('../views/CreateAccountTwin.vue')
     }
   ]
 })

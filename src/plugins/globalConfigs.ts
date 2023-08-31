@@ -6,6 +6,7 @@ import ValidateField from '@/components/ValidateField.vue'
 import TermsDialog from '@/components/TermsDialog.vue'
 import ExtLayout from '@/components/Layout.vue'
 import AccountChip from '@/components/AccountChip.vue'
+import CopyField from '@/components/CopyField.vue'
 
 import * as $validations from '@/validations'
 
@@ -23,7 +24,8 @@ export const $globalComponents = defineGlobalComponents({
   ValidateField,
   TermsDialog,
   ExtLayout,
-  AccountChip
+  AccountChip,
+  CopyField
 })
 
 export function $globalProps(app: App<Element>) {

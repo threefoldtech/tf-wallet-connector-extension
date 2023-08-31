@@ -6,4 +6,5 @@ export interface Account {
   ssh: string
   relay: string
   visible: boolean
+  passwordHash: string
 }

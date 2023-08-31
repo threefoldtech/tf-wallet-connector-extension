@@ -46,23 +46,19 @@
               </template>
             </v-tooltip>
           </v-btn>
-          <v-snackbar timeout="1500" :theme="theme.next" variant="tonal">
-            <p>Copied</p>
-            <template #activator="{ props }">
-              <v-tooltip text="Copy Address">
-                <template #activator="{ props: tooltipProps }">
-                  <v-btn
-                    :theme="theme.current"
-                    icon="mdi-content-copy"
-                    size="x-small"
-                    variant="flat"
-                    @click="$copy(account.address)"
-                    v-bind="$combineProps(props, tooltipProps)"
-                  />
-                </template>
-              </v-tooltip>
-            </template>
-          </v-snackbar>
+          <copy-field :data="account.address" #="{ copyFieldProps }">
+            <v-tooltip text="Copy Address">
+              <template #activator="{ props: tooltipProps }">
+                <v-btn
+                  :theme="theme.current"
+                  icon="mdi-content-copy"
+                  size="x-small"
+                  variant="flat"
+                  v-bind="$combineProps(copyFieldProps, tooltipProps)"
+                />
+              </template>
+            </v-tooltip>
+          </copy-field>
         </div>
         <v-divider vertical class="mx-2" v-if="!removeActions" />
         <v-menu v-if="!removeActions">
