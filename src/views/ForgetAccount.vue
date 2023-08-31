@@ -1,0 +1,46 @@
+<template>
+  <ext-layout>
+    <template #title>Forget Account</template>
+    <account-chip :account="account" remove-actions />
+    <v-alert type="warning" variant="tonal">
+      You are about to remove the account. This means that you will not be able to access it via
+      this extension anymore. If you wish to recover it, you would need to use the seed.
+    </v-alert>
+    <v-btn variant="tonal" color="error" block class="mt-4" @click="forgetAccount">
+      Forget Account
+    </v-btn>
+    <div class="mt-2 d-flex justify-center">
+      <v-btn variant="plain" @click="toAccountList"> Cancel </v-btn>
+    </div>
+  </ext-layout>
+</template>
+
+<script lang="ts">
+import { useRoute, useRouter } from 'vue-router'
+
+import { useWalletStore } from '@/stores'
+import AccountChip from '@/components/AccountChip.vue'
+
+export default {
+  name: 'ForgetAccount',
+  components: { AccountChip },
+  setup() {
+    const walletStore = useWalletStore()
+    const route = useRoute()
+    const router = useRouter()
+    const { mnemonic } = route.params as { mnemonic: string }
+    const account = walletStore.findAccount(mnemonic)
+
+    function toAccountList() {
+      router.push('/')
+    }
+
+    function forgetAccount() {
+      walletStore.forgetAccount(mnemonic)
+      toAccountList()
+    }
+
+    return { account, toAccountList, forgetAccount }
+  }
+}
+</script>
