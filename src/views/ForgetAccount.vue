@@ -19,11 +19,9 @@
 import { useRoute, useRouter } from 'vue-router'
 
 import { useWalletStore } from '@/stores'
-import AccountChip from '@/components/AccountChip.vue'
 
 export default {
   name: 'ForgetAccount',
-  components: { AccountChip },
   setup() {
     const walletStore = useWalletStore()
     const route = useRoute()

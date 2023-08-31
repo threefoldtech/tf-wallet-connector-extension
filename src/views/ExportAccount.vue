@@ -9,6 +9,7 @@
     <template #warning>
       You are exporting your account. Keep it safe and don't share it with anyone.
     </template>
+    <template #export-label>Export account</template>
   </export-layout>
 </template>
 
@@ -37,12 +38,12 @@ export default {
     function exportAccount(next: () => void) {
       const hash = md5(password.value)
       const cryptr = new Cryptr(hash, { saltLength: 10, pbkdf2Iterations: 10 })
-      const encryptedAccount = cryptr.encrypt(JSON.stringify(account))
+      const encryptedAccounts = cryptr.encrypt(JSON.stringify([account]))
       downloadAsFile(
         account.name.toLowerCase() + '.json',
         JSON.stringify({
-          encrypted: encryptedAccount,
-          address: account.address,
+          encrypted: encryptedAccounts,
+          accounts: [{ name: account.name, address: account.address }],
           meta: { version: VERSION, extension: window.$TF_WALLET_CONNECTOR_EXTENSION }
         })
       )

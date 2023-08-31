@@ -61,7 +61,7 @@
             <v-list-item-title>Import account from pre-existing seed</v-list-item-title>
           </v-list-item>
 
-          <v-list-item to="/new-account">
+          <v-list-item to="/restore-accounts">
             <template #prepend>
               <v-icon icon="mdi-file-upload" />
             </template>

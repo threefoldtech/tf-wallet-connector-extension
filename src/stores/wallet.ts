@@ -29,6 +29,16 @@ export const useWalletStore = defineStore('wallet:store', {
           address: '5EhMjEwYYvBsGiZKUY8Nc5j9JWN3sb21aQbDMEtBVpFQ9pD3',
           relay: 'relay.dev.grid.tf',
           visible: false
+        },
+        {
+          name: 'Thabet',
+          mnemonic:
+            'actual reveal dish guilt inner film scheme between lonely myself material replace2',
+          ssh: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCF3JezThwSchTvkF2oPtn8X6chevNsfE58dIY3/eg5zK9tKgNYIB2saoFh12a0AJU424sAeLO0HghhNhe/Co62xkzHhk6EpXWNSFkrlzw+FVn1FKDZbbOZH47sC3n6p5a3YhM4dALssZ/aZdpaKBgXkzk91usJ+GVa+eOnpMRBlHgi9PpvowyzPSKeH9ZcVRBPnVU+nQGyV+kd6RahNBoNgNrHu/QFI92yg/y/7Szus1IS0U92cWKf/K/Sot7O10kSjmj06lMGOO8zdENk/xrtUtRHzemCj+mq0Q/3KUMCGvdb/tH0TDeNenxvibummiym4VTcnYqbm+RDXWG8HUc/RPfEVBl8p1NGZnkBt6QJl5hddHaYwx8CCmf3maSrQFcmrWYtlUDBXYkPyrv0qmy2gM1PScntF/X9zhIfnELlyAVAKXfzVwixrBh7oOIAqefydSVcwWtCXoH38F5q/zo9bQv+eHntI83mZrUUT7JGirQF64fpJKbCZPhv0kUm9bF7DVQMiyRZdk748cgVp7dEzMVlrfZ2eIvZag5zmuJTPB7bw00+Ik9jNaOIhEoCWEaYBw7KmrLonesV8rWUkEAwWPe28bXCVmUZlgZbWJi7BFWCst2Z/j2WgScHbdAv28gAcneDW4yQmt2YaYqXqmwgSVCaD/irq5FSO4upmo5u0Q== mahmmoud.hassanein@gmail.com',
+          twinId: 143,
+          address: '5EhMjEwYYvBsGiZKUY8Nc5j9JWN3sb21aQbDMEtBVpFQ9pD3',
+          relay: 'relay.dev.grid.tf',
+          visible: false
         }
       ]
     }
@@ -56,6 +66,12 @@ export const useWalletStore = defineStore('wallet:store', {
     renameAccount(mnemonic: string, name: string) {
       const index = this.findIndex(mnemonic)
       this.$state.accounts[index].name = name
+    },
+
+    restoreAccounts(accounts: Account[]) {
+      const accountSet = new Set(this.accounts.map((account) => account.mnemonic))
+      const newAccounts = accounts.filter((account) => !accountSet.has(account.mnemonic))
+      this.$state.accounts.push(...newAccounts)
     },
 
     async login(mnemonic: string) {

@@ -37,7 +37,7 @@
         color="error"
         class="mt-1"
       >
-        Export this account
+        <slot name="export-label"></slot>
       </v-btn>
     </form>
     <div class="mt-2 d-flex justify-center">
@@ -51,11 +51,9 @@ import { useRouter } from 'vue-router'
 import { ref, type PropType } from 'vue'
 
 import type { Account } from '@/types'
-import AccountChip from '@/components/AccountChip.vue'
 
 export default {
   name: 'ExportAccount',
-  components: { AccountChip },
   props: {
     passwordLabel: { type: String, required: true },
     modelValue: { type: String, required: true },

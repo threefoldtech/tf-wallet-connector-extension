@@ -1,4 +1,5 @@
 import { WALLET_KEY } from '@/constants'
+import type { Account } from '@/types'
 import Cryptr from 'cryptr'
 import md5 from 'md5'
 
@@ -31,4 +32,43 @@ export function readLocalWallet(password: string): string {
   } catch {
     throw new Error('Please provide a valid password')
   }
+}
+
+export function readBackupFile(file: File): Promise<{ accounts: Account[]; encrypted: string }> {
+  return new Promise((res, rej) => {
+    const fileReader = new FileReader()
+    fileReader.addEventListener(
+      'load',
+      (event) => {
+        if (!event.target) {
+          return rej('Failed to read file `' + file.name + '`.')
+        }
+
+        const { result } = event.target
+        if (!result) {
+          return rej('File is empty.')
+        }
+
+        try {
+          const parsedResult = JSON.parse(result as string)
+          if (
+            typeof parsedResult !== 'object' ||
+            !('encrypted' in parsedResult) ||
+            !('accounts' in parsedResult) ||
+            typeof parsedResult.encrypted !== 'string' ||
+            parsedResult.encrypted.trim().length === 0 ||
+            !Array.isArray(parsedResult.accounts) ||
+            parsedResult.accounts.length === 0
+          ) {
+            throw new Error()
+          }
+          return res(parsedResult)
+        } catch {
+          return rej('Please provide a valid backup format.')
+        }
+      },
+      { once: true }
+    )
+    fileReader.readAsText(file)
+  })
 }

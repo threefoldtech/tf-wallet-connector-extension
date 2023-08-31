@@ -8,6 +8,7 @@
     <template #warning>
       You are exporting your accounts. Keep them safe and don't share them with anyone.
     </template>
+    <template #export-label>Export all accounts</template>
   </export-layout>
 </template>
 
@@ -36,7 +37,10 @@ export default {
         'accounts.json',
         JSON.stringify({
           encrypted: encryptedAccounts,
-          accounts: walletStore.accounts.map((account) => ({ adddress: account.address })),
+          accounts: walletStore.accounts.map((account) => ({
+            name: account.name,
+            address: account.address
+          })),
           meta: { version: VERSION, extension: window.$TF_WALLET_CONNECTOR_EXTENSION }
         })
       )

@@ -18,6 +18,10 @@ export const $router = createRouter({
     {
       path: '/export-accounts',
       component: () => import('../views/ExportAccounts.vue')
+    },
+    {
+      path: '/restore-accounts',
+      component: () => import('../views/RestoreAccounts.vue')
     }
   ]
 })
