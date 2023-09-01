@@ -34,6 +34,14 @@ export const $router = createRouter({
     {
       path: '/create-account/:mnemonic/:name/:password',
       component: () => import('../views/CreateAccountTwin.vue')
+    },
+    {
+      path: '/import-preaccount',
+      component: () => import('../views/ImportPreaccount.vue')
+    },
+    {
+      path: '/import-preaccount/:mnemonic',
+      component: () => import('../views/PreaccountDetails.vue')
     }
   ]
 })

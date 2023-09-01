@@ -55,7 +55,7 @@
             <v-list-item-title>Export all account</v-list-item-title>
           </v-list-item>
 
-          <v-list-item to="/new-account">
+          <v-list-item to="/import-preaccount">
             <template #prepend>
               <v-icon icon="mdi-key-variant" />
             </template>
