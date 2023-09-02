@@ -1,113 +1,127 @@
 // @ts-check
 
 /** @type { import("../src/global-components") } */
+/** @typedef { import("./types").Message } Message */
+/** @typedef { import("./types").HandlerCtx } HandlerCtx */
+/** @typedef { import("./types").Commands } Commands */
 
-chrome.runtime.sendMessage(
-  {
-    extension: window.$TF_WALLET_CONNECTOR_EXTENSION,
-    event: 'RequestAccess',
-    data: null
-  },
-  (response) => {
-    console.log(response)
+class ContentHandler {
+  /** @type { {[key: string]: undefined | ((ctx: HandlerCtx) => void) }} */ _backgroundHandlers = {}
+  /** @type { {[key: string]: (message?: Message['data']) => void }} */ _injectHandlers = {}
+
+  constructor() {
+    this._injectScripts(['cmds', 'inject'])
+    chrome.runtime.onMessage.addListener(this._backgroundMessageHandler.bind(this))
+    window.addEventListener('message', this._injectMessageHandler.bind(this))
   }
-)
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log({ message, sender, sendResponse })
-})
+  /**
+   * @param { Commands } event
+   * @param { undefined | ((ctx: HandlerCtx) => void) } handler
+   */
+  onBackground(event, handler) {
+    this._backgroundHandlers[event] = handler
+  }
 
-window.addEventListener('message', (e) => {
-  console.log(e)
-})
+  /**
+   * @param { Commands } event
+   * @param { (message?: Message['data']) => void } handler
+   */
+  onInject(event, handler) {
+    this._injectHandlers[event] = handler
+  }
 
-// /**
-//  * @param { string } name
-//  */
-function injectScript(name) {
-  const script = document.createElement('script')
-  script.setAttribute('type', 'text/javascript')
-  script.setAttribute('src', window.chrome.runtime.getURL(`${name}.js`))
-  document.body.appendChild(script)
+  /**
+   * @param { Commands } event
+   * @param { undefined | Message['data'] } [data]
+   */
+  sendMesssageToBackground(event, data) {
+    return chrome.runtime.sendMessage({
+      extension: window.$TF_WALLET_CONNECTOR_EXTENSION,
+      event,
+      data
+    })
+  }
+
+  /**
+   * @param { Commands } event
+   * @param { undefined | Message['data'] } data
+   */
+  sendMessageToInject(event, data) {
+    /** @type { Message} */ const msg = {
+      extension: window.$TF_WALLET_CONNECTOR_EXTENSION,
+      event,
+      data
+    }
+    document.dispatchEvent(
+      new CustomEvent(window.$TF_WALLET_CONNECTOR_EXTENSION, {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        detail: msg
+      })
+    )
+  }
+
+  /**
+   * @param { string[] } scriptNames
+   */
+  _injectScripts(scriptNames) {
+    for (const name of scriptNames) {
+      const script = document.createElement('script')
+      script.setAttribute('type', 'text/javascript')
+      script.setAttribute('src', window.chrome.runtime.getURL(`${name}.js`))
+      document.body.appendChild(script)
+    }
+  }
+
+  /**
+   * @param { Message } message
+   * @param { chrome.runtime.MessageSender } sender
+   * @param { (response?: any) => void } sendResponse
+   */
+  _backgroundMessageHandler(message, sender, sendResponse) {
+    if (
+      typeof message === 'object' &&
+      'extension' in message &&
+      message.extension === 'TF_WALLET_CONNECTOR_EXTENSION'
+    ) {
+      if (
+        message.event in this._backgroundHandlers &&
+        typeof this._backgroundHandlers[message.event] === 'function'
+      ) {
+        const fn = this._backgroundHandlers[message.event]
+        if (fn) {
+          fn({
+            message: message.data,
+            sender,
+            sendResponse
+          })
+        }
+      }
+    }
+  }
+
+  /**
+   *
+   * @param { MessageEvent<Message> } event
+   */
+  _injectMessageHandler({ data: message }) {
+    if (
+      typeof message === 'object' &&
+      'extension' in message &&
+      message.extension === 'TF_WALLET_CONNECTOR_EXTENSION'
+    ) {
+      if (message.event in this._injectHandlers) {
+        return this._injectHandlers[message.event](message.data)
+      }
+      console.log(`[TF_WALLET_CONNECTOR_EXTENSION] Unsupported event ${message.event}.`)
+    }
+  }
 }
 
-/* Inject `inject.js` & `cmds.js` to ui */
-injectScript('cmds')
-injectScript('inject')
+const handler = new ContentHandler()
 
-// class ContentHandler {
-//   constructor() {
-//     this._handlers = {}
-//     window.chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-//       const { cmd, data } = /** @type {{cmd: string, data: any } }*/ message
-//       const cmds = window.$TF_WALLET_CONNECTOR_EXTENSION_CMDS
-//     })
-//   }
-
-//   /**
-//    *
-//    * @param { string } cmd
-//    * @param { (ctx: { message: any, sender: chrome.runtime.MessageSender, sendResponse(response?: any): void }) => void } handler
-//    */
-//   on(cmd, handler) {
-//     this._handlers[cmd] = handler
-//   }
-// }
-
-// /* Listen to message from extension */
-// window.chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-//   const { cmd, data } = /** @type {{cmd: string, data: any } }*/ message
-//   const cmds = window.$TF_WALLET_CONNECTOR_EXTENSION_CMDS
-
-//   switch (cmd) {
-//     case cmds.Login: {
-//       window.sessionStorage.setItem(window.$TF_WALLET_CONNECTOR_EXTENSION, JSON.stringify(data))
-//       sendMessage(data)
-//       return sendResponse(true)
-//     }
-
-//     case cmds.Logout: {
-//       window.sessionStorage.removeItem(window.$TF_WALLET_CONNECTOR_EXTENSION)
-//       sendMessage(null)
-//       return sendResponse(true)
-//     }
-
-//     case cmds.GetSessionStorage: {
-//       return sendResponse(
-//         JSON.parse(window.sessionStorage.getItem(window.$TF_WALLET_CONNECTOR_EXTENSION) || '""')
-//       )
-//     }
-
-//     default:
-//       return sendResponse(false)
-//   }
-// })
-
-// /* Pass data to ui */
-// /** @param { any } data */
-// function sendMessage(data) {
-//   document.dispatchEvent(
-//     new CustomEvent(window.$TF_WALLET_CONNECTOR_EXTENSION, {
-//       detail: data,
-//       bubbles: true,
-//       composed: true
-//     })
-//   )
-// }
-// /* Pass data to background */
-// function bgSendMessage(data) {
-//   chrome.runtime.sendMessage({ data }, (response) => {
-//     console.log(response)
-//   })
-// }
-
-// window.addEventListener('load', init, { once: true })
-// function init() {
-//   bgSendMessage('init')
-
-//   // prettier-ignore
-//   const account = JSON.parse(window.sessionStorage.getItem(window.$TF_WALLET_CONNECTOR_EXTENSION) || '""')
-//   if (account) {
-//     sendMessage(account)
-//   }
-// }
+handler.onInject('REQUEST_ACCESS', () => {
+  handler.sendMesssageToBackground('REQUEST_ACCESS')
+})

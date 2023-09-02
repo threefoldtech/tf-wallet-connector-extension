@@ -27,10 +27,7 @@ declare module '@vue/runtime-core' {
 }
 
 interface TF_WALLET_CONNECTOR_EXTENSION_CMDS {
-  Login: 'LOGIN'
-  Logout: 'LOGOUT'
-  GetSessionStorage: 'GET_SESSION_STORAGE'
-  RequestAccess: 'REQUEST_ACCESS'
+  REQUEST_ACCESS: 'REQUEST_ACCESS'
 }
 
 declare global {

@@ -1,66 +1,66 @@
-/** @type { import("../src/global-components") } */
+// @ts-check
 
-const btn = document.createElement('button')
-btn.textContent = 'Request Access'
-btn.onclick = () => {
-  window.postMessage({
-    extension: window.$TF_WALLET_CONNECTOR_EXTENSION,
-    event: 'RequestAccess',
-    data: null
-  })
+/** @type { import("../src/global-components") } */
+/** @typedef { import("./types").Message } Message */
+/** @typedef { import("./types").Commands } Commands */
+
+class InjectHandler {
+  /** @type { {[key: string]: (data?: Message['data']) => void }} */ _handlers = {}
+
+  constructor() {
+    document.addEventListener(
+      window.$TF_WALLET_CONNECTOR_EXTENSION,
+      this._messageHandler.bind(this)
+    )
+  }
+
+  /**
+   * @param { Commands } event
+   * @param { (data?: Message['data']) => void } handler
+   */
+  on(event, handler) {
+    this._handlers[event] = handler
+  }
+
+  /**
+   * @param { Commands } event
+   * @param { undefined | Message['data'] } [data]
+   */
+  sendMessageToContent(event, data) {
+    /** @type { Message } */ const msg = {
+      extension: window.$TF_WALLET_CONNECTOR_EXTENSION,
+      event,
+      data
+    }
+    window.postMessage(msg)
+  }
+
+  /**
+   *
+   * @param { CustomEvent<Message> } event
+   */
+  _messageHandler({ detail: message }) {
+    if (
+      typeof message === 'object' &&
+      'extension' in message &&
+      message.extension === window.$TF_WALLET_CONNECTOR_EXTENSION
+    ) {
+      if (message.event in this._handlers) {
+        return this._handlers[message.event](message.data)
+      }
+      console.log(`[TF_WALLET_CONNECTOR_EXTENSION] Unsupported event ${message.event}.`)
+    }
+  }
 }
 
-document.body.prepend(btn)
+const handler = new InjectHandler()
 
-// // @ts-check
-
-// /** @type { import("../src/global-components") } */
-
-// class WalletStore {
-//   _account = null
-//   _subscriptions = []
-
-//   subscribe(subscription) {
-//     this._subscriptions.push(subscription)
-//     subscription(this._account)
-
-//     return this.unsubscribe.bind(this, subscription)
-//   }
-
-//   unsubscribe(subscription) {
-//     const index = this._subscriptions.indexOf(subscription)
-//     if (index !== -1) {
-//       this._subscriptions.splice(index, 1)
-//     }
-//   }
-
-//   _update(account) {
-//     if (this._account === account) {
-//       return
-//     }
-
-//     if (this._account && account) {
-//       /** @type { any } */
-//       const _account = this._account
-//       if (_account.mnemonic === account.mnemonic && _account.ssh === account.ssh) {
-//         return
-//       }
-//     }
-
-//     this._account = account
-//     this._notify()
-//   }
-
-//   _notify() {
-//     this._subscriptions.forEach((fn) => fn(this._account))
-//   }
-// }
-
-// window[window.$TF_WALLET_CONNECTOR_EXTENSION] = new WalletStore()
-
-// /* Listen to message from content.js */
-// document.addEventListener(window.$TF_WALLET_CONNECTOR_EXTENSION, handleMessage)
-// function handleMessage(/** @type { any}  */ e) {
-//   const { detail: data } = e
-//   window[window.$TF_WALLET_CONNECTOR_EXTENSION]._update(data)
-// }
+/* test only */
+{
+  const btn = document.createElement('button')
+  btn.textContent = 'Request Access'
+  btn.onclick = () => {
+    handler.sendMessageToContent('REQUEST_ACCESS')
+  }
+  document.body.prepend(btn)
+}

@@ -1,32 +1,26 @@
 // @ts-check
 
 /** @typedef { import("./types").Message } Message */
+/** @typedef { import("./types").HandlerCtx } HandlerCtx */
+/** @typedef { import("./types").Commands } Commands */
 
 class BackgroundHandler {
-  _handlers = {}
+  /** @type { {[key: string]: (ctx: HandlerCtx) => void } } */ _handlers = {}
 
   constructor() {
     chrome.runtime.onMessage.addListener(this._messageHandler.bind(this))
   }
 
   /**
-   * @returns { Promise<number> }
+   * @param { Commands } event
+   * @param { (ctx: HandlerCtx) => void } handler
    */
-  _getTabId() {
-    return new Promise((res) => {
-      return chrome.windows.getCurrent((w) => {
-        return chrome.tabs.query({ active: true, windowId: w.id }, (tabs) => {
-          if (tabs && tabs[0] && tabs[0].id) {
-            return res(tabs[0].id)
-          }
-        })
-      })
-    })
+  on(event, handler) {
+    this._handlers[event] = handler
   }
 
   /**
-   *
-   * @param { { event: string, data?: any } } message
+   * @param { { event: Commands, data?: any } } message
    */
   async sendMessageToContentScript(message) {
     const tabId = await this._getTabId()
@@ -41,7 +35,6 @@ class BackgroundHandler {
   }
 
   /**
-   *
    * @param { Message } message
    * @param { chrome.runtime.MessageSender } sender
    * @param { (response?: any) => void } sendResponse
@@ -60,61 +53,31 @@ class BackgroundHandler {
   }
 
   /**
-   * @typedef { Object } HandlerCtx
-   * @property { any | null } message
-   * @property { chrome.runtime.MessageSender } sender
-   * @property { (response?: any) => void } sendResponse
+   * @returns { Promise<number> }
    */
-
-  /**
-   *
-   * @param { string } event
-   * @param { (ctx: HandlerCtx) => void } handler
-   */
-  on(event, handler) {
-    this._handlers[event] = handler
+  _getTabId() {
+    return new Promise((res) => {
+      return chrome.windows.getCurrent((w) => {
+        return chrome.tabs.query({ active: true, windowId: w.id }, (tabs) => {
+          if (tabs && tabs[0] && tabs[0].id) {
+            return res(tabs[0].id)
+          }
+        })
+      })
+    })
   }
 }
 
-const backgroundHandler = new BackgroundHandler()
+const handler = new BackgroundHandler()
 
-backgroundHandler.on('RequestAccess', ({ message, sendResponse }) => {
-  console.log(message)
-  sendResponse('Is that even working?')
+handler.on('REQUEST_ACCESS', () => {
+  chrome.windows.create({
+    url: chrome.runtime.getURL('index.html') + '#/request-access',
+    height: 600,
+    width: 535,
+    top: 50,
+    left: 50,
+    focused: true,
+    type: 'popup'
+  })
 })
-
-// /** @type { declare } */
-
-// console.log('background')
-// console.log(chrome.runtime.getURL('index.html'))
-
-// chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-//   const t = tabs[0]!.id
-//   chrome.windows.create({
-//     url: chrome.runtime.getURL('index.html'),
-//     type: 'popup' //No Address bar
-//     //In here you can also add constrain for the window
-//     //This is for manifest v3
-//   })
-//   //   console.log({ chrome, tabs })
-//   // window.chrome.tabs.sendMessage(tabs[0].id, {action: "open_dialog_box"}, function(response) {});
-// })
-
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   console.log(message)
-//   if (message === 'RequestAccess') {
-//     console.log('request access')
-//   }
-//   //   if (message.data === 'init') {
-//   //     return sendResponse({
-//   //       requestAccess: () => {
-//   //         chrome.windows.create({
-//   //           url: chrome.runtime.getURL('index.html'),
-//   //           type: 'popup'
-//   //         })
-//   //       }
-//   //     })
-//   //   }
-
-//   sendResponse('Thanks')
-// })
