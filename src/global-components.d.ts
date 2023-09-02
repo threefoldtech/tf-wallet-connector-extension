@@ -28,6 +28,7 @@ declare module '@vue/runtime-core' {
 
 interface TF_WALLET_CONNECTOR_EXTENSION_CMDS {
   REQUEST_ACCESS: 'REQUEST_ACCESS'
+  RESPONSE_ACCESS: 'RESPONSE_ACCESS'
 }
 
 declare global {

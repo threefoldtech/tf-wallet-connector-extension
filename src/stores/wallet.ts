@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import md5 from 'md5'
 
-import { network, loadGrid, readSSH, sendMessage } from '@/utils'
+import { network, loadGrid, readSSH } from '@/utils'
 import type { Account } from '@/types'
 
 export interface WalletStore {
