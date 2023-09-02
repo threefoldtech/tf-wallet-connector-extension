@@ -24,7 +24,7 @@
         @update:model-value="$emit('update:search', $event)"
       />
 
-      <v-menu transition="slide-y-transition" location="bottom right">
+      <v-menu transition="slide-y-transition" location="bottom right" v-if="!removeActions">
         <template v-slot:activator="{ props }">
           <v-tooltip text="Settings" :theme="theme.next">
             <template #activator="{ props: tooltipProps }">
@@ -98,7 +98,8 @@ export default {
   props: {
     noLogo: Boolean,
     search: String,
-    disableActions: Boolean
+    disableActions: Boolean,
+    removeActions: Boolean
   },
   emits: {
     'update:search': (query: string) => true || query

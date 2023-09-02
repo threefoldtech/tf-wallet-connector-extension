@@ -1,10 +1,13 @@
 <template>
-  <v-text-field label="Mnemonic" readonly v-model="walletStore.account!.mnemonic" />
+  <v-text-field label="Mnemonic" readonly />
+  <!-- v-model="walletStore.account!.mnemonic" -->
 
   <ssh-field v-model:loading="sshLoading" />
 
-  <v-text-field label="Twin ID" readonly v-model="walletStore.account!.twinId" />
-  <v-text-field label="Address" readonly v-model="walletStore.account!.address" />
+  <v-text-field label="Twin ID" readonly />
+  <!-- v-model="walletStore.account!.twinId" -->
+  <v-text-field label="Address" readonly />
+  <!-- v-model="walletStore.account!.address" -->
 
   <div class="d-flex justify-end">
     <v-btn variant="outlined" color="error" :disabled="sshLoading" @click="walletStore.logout()">

@@ -16,6 +16,25 @@ function injectScript(name) {
 injectScript('cmds')
 injectScript('inject')
 
+class ContentHandler {
+  constructor() {
+    this._handlers = {}
+    window.chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+      const { cmd, data } = /** @type {{cmd: string, data: any } }*/ message
+      const cmds = window.$TF_WALLET_CONNECTOR_EXTENSION_CMDS
+    })
+  }
+
+  /**
+   *
+   * @param { string } cmd
+   * @param { (ctx: { message: any, sender: chrome.runtime.MessageSender, sendResponse(response?: any): void }) => void } handler
+   */
+  on(cmd, handler) {
+    this._handlers[cmd] = handler
+  }
+}
+
 /* Listen to message from extension */
 window.chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   const { cmd, data } = /** @type {{cmd: string, data: any } }*/ message
@@ -56,9 +75,17 @@ function sendMessage(data) {
     })
   )
 }
+/* Pass data to background */
+function bgSendMessage(data) {
+  chrome.runtime.sendMessage({ data }, (response) => {
+    console.log(response)
+  })
+}
 
 window.addEventListener('load', init, { once: true })
 function init() {
+  bgSendMessage('init')
+
   // prettier-ignore
   const account = JSON.parse(window.sessionStorage.getItem(window.$TF_WALLET_CONNECTOR_EXTENSION) || '""')
   if (account) {

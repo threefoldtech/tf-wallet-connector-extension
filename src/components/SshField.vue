@@ -28,7 +28,7 @@
     <v-btn
       variant="tonal"
       color="primary"
-      :disabled="ssh === walletStore.account!.ssh || !ssh"
+      :disabled="ssh === '' /* walletStore.account!.ssh */ || !ssh"
       :loading="updatingSSH"
       @click="updateSSH"
     >
@@ -51,7 +51,7 @@ export default {
   setup(_, { emit }) {
     const walletStore = useWalletStore()
 
-    const ssh = ref(walletStore.account!.ssh)
+    const ssh = ref('' /* walletStore.account!.ssh */)
 
     const generatingSSh = ref(false)
     async function generateSSH() {
@@ -76,7 +76,7 @@ export default {
     }
 
     async function _updateSSH(newSsh: string) {
-      const grid = await loadGrid(walletStore.account!.mnemonic)
+      const grid = await loadGrid('' /* walletStore.account!.mnemonic */)
       await storeSSH(grid, newSsh)
       await walletStore.updateSSH(newSsh)
     }

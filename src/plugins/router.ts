@@ -42,6 +42,11 @@ export const $router = createRouter({
     {
       path: '/import-preaccount/:mnemonic',
       component: () => import('../views/PreaccountDetails.vue')
+    },
+
+    {
+      path: '/request-access',
+      component: () => import('../popups/RequestAccess.vue')
     }
   ]
 })
