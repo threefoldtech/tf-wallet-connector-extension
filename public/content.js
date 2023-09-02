@@ -14,6 +14,10 @@
 
     /** @type { [key: string]: boolean } */ _authList = {}
 
+    get authList() {
+      return { ...this._authList }
+    }
+
     constructor() {
       this._injectScripts(['cmds', 'inject'])
       chrome.runtime.onMessage.addListener(this._backgroundMessageHandler.bind(this))
@@ -180,5 +184,9 @@
     handler.setAuth(window.location.origin, message)
     handler.sendMessageToInject('RESPONSE_ACCESS', message)
     sendResponse('ok')
+  })
+
+  handler.onBackground('GET_AUTH_LIST', ({ sendResponse }) => {
+    sendResponse(handler.authList)
   })
 }

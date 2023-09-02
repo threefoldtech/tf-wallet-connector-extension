@@ -92,23 +92,4 @@
     })
     sendResponse('ok')
   })
-
-  /**
-   * @description
-   * This event should be reached from extension popup and forwarded to content script
-   */
-  handler.on('RESPONSE_ACCESS', async ({ message, sendResponse }) => {
-    /** @type { { accept: boolean, tabId: number } } */ const msg = message
-    if (
-      typeof msg === 'object' &&
-      'accept' in msg &&
-      'tabId' in msg &&
-      typeof msg.accept === 'boolean' &&
-      typeof msg.tabId === 'number'
-    ) {
-      sendResponse('ok')
-      return await handler.sendMessageToContentScript('RESPONSE_ACCESS', msg.accept, msg.tabId)
-    }
-    sendResponse('no')
-  })
 }

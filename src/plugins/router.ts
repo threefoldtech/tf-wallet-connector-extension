@@ -47,6 +47,10 @@ export const $router = createRouter({
     {
       path: '/request-access',
       component: () => import('../popups/RequestAccess.vue')
+    },
+    {
+      path: '/manage-access',
+      component: () => import('../views/ManageAccess.vue')
     }
   ]
 })

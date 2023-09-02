@@ -40,13 +40,13 @@ export default {
 
     async function accept(tabId?: number) {
       accepting.value = true
-      await sendMessageToContent('RESPONSE_ACCESS', { accept: true, tabId })
+      await sendMessageToContent('RESPONSE_ACCESS', true, tabId)
       window.close()
     }
 
     async function deny(tabId?: number) {
       denying.value = true
-      await sendMessageToContent('RESPONSE_ACCESS', { accept: false, tabId })
+      await sendMessageToContent('RESPONSE_ACCESS', false, tabId)
       window.close()
     }
 

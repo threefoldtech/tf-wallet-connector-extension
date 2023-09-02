@@ -71,6 +71,15 @@
 
           <v-divider />
 
+          <v-list-item to="/manage-access">
+            <template #prepend>
+              <v-icon icon="mdi-security" />
+            </template>
+            <v-list-item-title>Manage websites access</v-list-item-title>
+          </v-list-item>
+
+          <v-divider />
+
           <v-list-item @click="theme.toggle">
             <template #prepend>
               <v-icon :icon="theme.icon" />
