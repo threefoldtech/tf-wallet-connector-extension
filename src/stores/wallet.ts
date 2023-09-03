@@ -12,7 +12,19 @@ export interface WalletStore {
 export const useWalletStore = defineStore('wallet:store', {
   state(): WalletStore {
     return {
-      accounts: []
+      accounts: import.meta.env.DEV
+        ? [
+            {
+              name: 'test',
+              address: 'test',
+              mnemonic: 'test',
+              relay: 'test',
+              ssh: 's',
+              twinId: 0,
+              visible: true
+            }
+          ]
+        : []
     }
   },
 
@@ -43,10 +55,10 @@ export const useWalletStore = defineStore('wallet:store', {
       await sendMessageToContent('UPDATE_ACCOUNT', this.$state.accounts[index])
     },
 
-    async restoreAccounts(accounts: Account[], tabId?: number) {
+    async restoreAccounts(accounts: Account[]) {
       const accountSet = new Set(this.accounts.map((account) => account.mnemonic))
       const newAccounts = accounts.filter((account) => !accountSet.has(account.mnemonic))
-      await sendMessageToContent('ADD_ACCOUNTS', accounts, tabId)
+      await sendMessageToContent('ADD_ACCOUNTS', newAccounts)
       this.$state.accounts.push(...newAccounts)
     },
 
@@ -80,9 +92,10 @@ export const useWalletStore = defineStore('wallet:store', {
       // await sendMessage('Login', this.account)
     },
 
-    async updateSSH(ssh: string) {
-      // this.$state.account!.ssh = ssh
-      // await sendMessage('Login', this.account)
+    async updateSSH(ssh: string, mnemonic: string) {
+      const index = this.findIndex(mnemonic)
+      this.$state.accounts[index].ssh = ssh
+      await sendMessageToContent('UPDATE_ACCOUNT', this.$state.accounts[index])
     },
 
     async logout() {
@@ -90,8 +103,8 @@ export const useWalletStore = defineStore('wallet:store', {
       // await sendMessage('Logout', this.account)
     },
 
-    async init() {
-      this.$state.accounts = await sendMessageToContent('GET_ACCOUNTS')
+    async init(tabId?: number) {
+      this.$state.accounts = await sendMessageToContent('GET_ACCOUNTS', null, tabId)
     }
   }
 })

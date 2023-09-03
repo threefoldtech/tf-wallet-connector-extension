@@ -2,7 +2,7 @@
   <v-text-field label="Mnemonic" readonly />
   <!-- v-model="walletStore.account!.mnemonic" -->
 
-  <ssh-field v-model:loading="sshLoading" />
+  <!-- <ssh-field v-model:loading="sshLoading" /> -->
 
   <v-text-field label="Twin ID" readonly />
   <!-- v-model="walletStore.account!.twinId" -->
@@ -21,11 +21,11 @@ import { ref } from 'vue'
 
 import { useWalletStore } from '@/stores'
 
-import SshField from '@/components/SshField.vue'
+// import SshField from '@/components/SshField.vue'
 
 export default {
   name: 'ConnectedWallet',
-  components: { SshField },
+  // components: { SshField },
   setup() {
     const walletStore = useWalletStore()
     const sshLoading = ref(false)

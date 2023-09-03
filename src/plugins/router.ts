@@ -51,6 +51,10 @@ export const $router = createRouter({
     {
       path: '/manage-access',
       component: () => import('../views/ManageAccess.vue')
+    },
+    {
+      path: '/manage-account/:mnemonic',
+      component: () => import('../views/ManageAccount.vue')
     }
   ]
 })

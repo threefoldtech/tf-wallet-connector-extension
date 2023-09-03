@@ -6,6 +6,7 @@
 
 <script lang="ts">
 import { onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 import { useWalletStore } from '@/stores'
 import { useVuetifyTheme } from '@/hooks'
@@ -15,10 +16,16 @@ export default {
   setup() {
     const walletStore = useWalletStore()
     const theme = useVuetifyTheme()
+    const router = useRouter()
+    const route = useRoute()
 
-    onMounted(() => {
+    onMounted(async () => {
+      await router.isReady()
+
+      const id = +(route.query.tabId || 0)
+      const tabId = id > 0 ? id : undefined
       theme.value.load()
-      walletStore.init()
+      walletStore.init(tabId)
     })
 
     return { walletStore }

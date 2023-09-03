@@ -74,6 +74,13 @@
               <v-list-item-title>Rename</v-list-item-title>
             </v-list-item>
 
+            <v-list-item :to="'/manage-account/' + account.mnemonic">
+              <template #prepend>
+                <v-icon icon="mdi-cog" />
+              </template>
+              <v-list-item-title>Manage Account</v-list-item-title>
+            </v-list-item>
+
             <v-divider />
 
             <v-list-item :to="'/export-account/' + account.mnemonic">

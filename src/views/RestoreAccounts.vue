@@ -26,7 +26,7 @@
         </div>
       </fieldset>
 
-      <form @submit.prevent="restoreAccounts(+$route.query.tabId!)">
+      <form @submit.prevent="restoreAccounts()">
         <password-field #="{ passwordFieldProps }">
           <validate-field
             :value="password"
@@ -79,7 +79,7 @@
 
 <script lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+
 import md5 from 'md5'
 import Cryptr from 'cryptr'
 
@@ -130,12 +130,12 @@ export default {
     }
 
     const restoreError = ref('')
-    function restoreAccounts(tabId: number) {
+    async function restoreAccounts() {
       const hash = md5(password.value)
       const cryptr = new Cryptr(hash, { pbkdf2Iterations: 10, saltLength: 10 })
       try {
         const accounts = JSON.parse(cryptr.decrypt(preview.value!.encrypted))
-        walletStore.restoreAccounts(accounts, tabId)
+        await walletStore.restoreAccounts(accounts)
         close()
       } catch {
         restoreError.value = 'Please provide a valid password to decrypt your accounts data.'

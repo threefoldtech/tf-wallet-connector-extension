@@ -1,13 +1,20 @@
+let _tabId: number | undefined
+
 export async function sendMessageToContent<T>(
   event: keyof Window['$TF_WALLET_CONNECTOR_EXTENSION_CMDS'],
   data?: any,
   tabId?: number
 ) {
+  if (tabId) {
+    _tabId = tabId
+  }
+
   if (import.meta.env.DEV) {
     return Promise.resolve([])
   }
 
-  const id = tabId || (await getTabId())
+  const id = _tabId || (await getTabId())
+
   return chrome.tabs.sendMessage(id, {
     extension: window.$TF_WALLET_CONNECTOR_EXTENSION,
     event,

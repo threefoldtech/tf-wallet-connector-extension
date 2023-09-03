@@ -8,19 +8,14 @@
       block
       color="error"
       class="mt-1"
-      @click="accept(+$route.query.tabId!)"
+      @click="accept()"
       :loading="accepting"
       :disabled="denying"
     >
       Give Access
     </v-btn>
     <div class="mt-2 d-flex justify-center">
-      <v-btn
-        variant="plain"
-        @click="deny(+$route.query.tabId!)"
-        :loading="denying"
-        :disabled="accepting"
-      >
+      <v-btn variant="plain" @click="deny()" :loading="denying" :disabled="accepting">
         Cancel
       </v-btn>
     </div>
@@ -38,15 +33,15 @@ export default {
     const accepting = ref(false)
     const denying = ref(false)
 
-    async function accept(tabId?: number) {
+    async function accept() {
       accepting.value = true
-      await sendMessageToContent('RESPONSE_ACCESS', true, tabId)
+      await sendMessageToContent('RESPONSE_ACCESS', true)
       window.close()
     }
 
-    async function deny(tabId?: number) {
+    async function deny() {
       denying.value = true
-      await sendMessageToContent('RESPONSE_ACCESS', false, tabId)
+      await sendMessageToContent('RESPONSE_ACCESS', false)
       window.close()
     }
 
