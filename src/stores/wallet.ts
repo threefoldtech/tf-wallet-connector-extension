@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import md5 from 'md5'
+import Cryptr from 'cryptr'
 
-import { network, loadGrid, readSSH } from '@/utils'
+import { network, loadGrid } from '@/utils'
 import type { Account } from '@/types'
 
 export interface WalletStore {
@@ -19,8 +20,7 @@ export const useWalletStore = defineStore('wallet:store', {
           twinId: 370,
           address: '5EPdJRyju5DS1xhBWzo6JzLek8MnbcwUEQVLaPZRDLuMMhUv',
           relay: 'relay.dev.grid.tf',
-          visible: true,
-          passwordHash: ''
+          visible: true
         },
         {
           name: 'Emad',
@@ -30,8 +30,7 @@ export const useWalletStore = defineStore('wallet:store', {
           twinId: 143,
           address: '5EhMjEwYYvBsGiZKUY8Nc5j9JWN3sb21aQbDMEtBVpFQ9pD3',
           relay: 'relay.dev.grid.tf',
-          visible: false,
-          passwordHash: ''
+          visible: false
         },
         {
           name: 'Thabet',
@@ -41,8 +40,7 @@ export const useWalletStore = defineStore('wallet:store', {
           twinId: 143,
           address: '5EhMjEwYYvBsGiZKUY8Nc5j9JWN3sb21aQbDMEtBVpFQ9pD3',
           relay: 'relay.dev.grid.tf',
-          visible: false,
-          passwordHash: ''
+          visible: false
         }
       ]
     }
@@ -80,15 +78,15 @@ export const useWalletStore = defineStore('wallet:store', {
 
     async addAccount(name: string, mnemonic: string, password: string) {
       const grid = await loadGrid(mnemonic)
+      const cryptr = new Cryptr(md5(password), { saltLength: 10, pbkdf2Iterations: 10 })
       this.$state.accounts.push({
         name,
         visible: true,
-        mnemonic,
+        mnemonic: cryptr.encrypt(mnemonic),
         ssh: '',
         twinId: grid.twinId,
         address: grid.tfclient.address,
-        relay: grid.getDefaultUrls(network).relay.slice(6),
-        passwordHash: md5(password)
+        relay: grid.getDefaultUrls(network).relay.slice(6)
       })
     },
 

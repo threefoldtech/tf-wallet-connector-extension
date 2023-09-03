@@ -30,9 +30,17 @@
      * @param { string } url
      * @param { boolean } accept
      */
-    setAuth(url, accept) {
+    async setAuth(url, accept) {
       this._authList[url] = accept
-      localStorage.setItem(AUTH_LIST, this._authList)
+      await this._saveAuthList()
+    }
+
+    /**
+     * @param { string } url
+     */
+    async toggleAuth(url) {
+      this._authList[url] = !this._authList[url]
+      await this._saveAuthList()
     }
 
     /** @param { string } url  */
@@ -43,9 +51,9 @@
     /**
      * @param { string } url
      */
-    removeAuth(url) {
+    async deleteAuth(url) {
       delete this._authList[url]
-      localStorage.setItem(AUTH_LIST, this._authList)
+      await this._saveAuthList()
     }
 
     /**
@@ -114,7 +122,6 @@
      * @param { (response?: any) => void } sendResponse
      */
     _backgroundMessageHandler(message, sender, sendResponse) {
-      console.log({ message })
       if (
         typeof message === 'object' &&
         'extension' in message &&
@@ -154,20 +161,19 @@
     }
 
     _saveAuthList() {
-      localStorage.setItem(AUTH_LIST, JSON.stringify(this._authList))
+      return chrome.storage.sync.set({ [AUTH_LIST]: JSON.stringify(this._authList) })
     }
 
-    _getAuthList() {
-      const list = localStorage.getItem(AUTH_LIST)
-      console.log({ list })
-      if (list) {
-        return JSON.parse(list)
+    async _getAuthList() {
+      const list = await chrome.storage.sync.get(AUTH_LIST)
+      if (list[AUTH_LIST]) {
+        return JSON.parse(list[AUTH_LIST])
       }
       return {}
     }
 
-    _initAuthList() {
-      this._authList = this._getAuthList()
+    async _initAuthList() {
+      this._authList = await this._getAuthList()
     }
   }
 
@@ -188,5 +194,15 @@
 
   handler.onBackground('GET_AUTH_LIST', ({ sendResponse }) => {
     sendResponse(handler.authList)
+  })
+
+  handler.onBackground('TOGGLE_ACCESS_PERMISSION', ({ message, sendResponse }) => {
+    handler.toggleAuth(message)
+    sendResponse('ok')
+  })
+
+  handler.onBackground('DELETE_ACCESS_PERMISSION', ({ message, sendResponse }) => {
+    handler.deleteAuth(message)
+    sendResponse('ok')
   })
 }

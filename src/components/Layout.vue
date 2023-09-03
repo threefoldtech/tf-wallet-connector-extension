@@ -22,6 +22,7 @@
         prepend-inner-icon="mdi-account"
         :model-value="$props.search"
         @update:model-value="$emit('update:search', $event)"
+        @click:clear="$emit('update:search', '')"
       />
 
       <v-menu transition="slide-y-transition" location="bottom right" v-if="!removeActions">

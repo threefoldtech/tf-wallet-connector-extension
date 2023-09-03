@@ -74,8 +74,6 @@
   const handler = new BackgroundHandler()
 
   handler.on('REQUEST_ACCESS', async ({ sender, sendResponse }) => {
-    console.log({ tabId: sender.tab.id })
-
     await chrome.windows.create({
       url:
         chrome.runtime.getURL('index.html') +
