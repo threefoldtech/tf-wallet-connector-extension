@@ -1,5 +1,5 @@
 <template>
-  <v-app :style="{ width: '535px' }">
+  <v-app :style="{ width: '535px', height: '600px' }">
     <router-view />
   </v-app>
 </template>

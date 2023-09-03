@@ -63,7 +63,7 @@
             <v-list-item-title>Import account from pre-existing seed</v-list-item-title>
           </v-list-item>
 
-          <v-list-item to="/restore-accounts">
+          <v-list-item @click="openRestoreAccounts">
             <template #prepend>
               <v-icon icon="mdi-file-upload" />
             </template>
@@ -93,7 +93,7 @@
 
     <v-divider />
 
-    <v-card-text :style="{ overflowY: 'auto', maxHeight: '510px' }">
+    <v-card-text :style="{ overflowY: 'auto', height: '510px' }">
       <slot></slot>
     </v-card-text>
   </v-card>
@@ -102,6 +102,10 @@
 <script lang="ts">
 import { useVuetifyTheme } from '@/hooks'
 import ThreefoldLogo from '../assets/threefold-logo.png'
+
+declare const chrome: any
+
+import { getTabId } from '@/utils'
 
 export default {
   name: 'ExtLayout',
@@ -117,9 +121,22 @@ export default {
   setup() {
     const theme = useVuetifyTheme()
 
+    async function openRestoreAccounts() {
+      const tabId = await getTabId()
+      chrome.windows.create({
+        url: chrome.runtime.getURL('index.html') + '#/restore-accounts?tabId=' + tabId,
+        height: 600,
+        width: 535,
+        top: 50,
+        left: 50,
+        focused: true,
+        type: 'popup'
+      })
+    }
+
     return {
       ThreefoldLogo,
-
+      openRestoreAccounts,
       theme
     }
   }

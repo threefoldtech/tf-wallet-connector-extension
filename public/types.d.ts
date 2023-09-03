@@ -13,3 +13,13 @@ export interface HandlerCtx {
   sender: chrome.runtime.MessageSender
   sendResponse: (response?: any) => void
 }
+
+export interface Account {
+  name: string
+  mnemonic: string
+  twinId: number
+  address: string
+  ssh: string
+  relay: string
+  visible: boolean
+}

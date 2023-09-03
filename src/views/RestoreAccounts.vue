@@ -26,7 +26,7 @@
         </div>
       </fieldset>
 
-      <form @submit.prevent="restoreAccounts">
+      <form @submit.prevent="restoreAccounts(+$route.query.tabId!)">
         <password-field #="{ passwordFieldProps }">
           <validate-field
             :value="password"
@@ -71,7 +71,7 @@
       </form>
 
       <div class="mt-2 d-flex justify-center">
-        <v-btn variant="plain" @click="toAccountList"> Cancel </v-btn>
+        <v-btn variant="plain" @click="close()"> Cancel </v-btn>
       </div>
     </template>
   </ext-layout>
@@ -90,7 +90,6 @@ import { useWalletStore } from '@/stores'
 export default {
   name: 'RestoreAccounts',
   setup() {
-    const router = useRouter()
     const walletStore = useWalletStore()
     const backupFile = ref<File[]>([])
     const preview = ref<{ accounts: Account[]; encrypted: string } | null>(null)
@@ -126,25 +125,25 @@ export default {
     const password = ref('')
     const passwordValid = ref(false)
 
-    function toAccountList() {
-      router.push('/')
+    function close() {
+      window.close()
     }
 
     const restoreError = ref('')
-    function restoreAccounts() {
+    function restoreAccounts(tabId: number) {
       const hash = md5(password.value)
       const cryptr = new Cryptr(hash, { pbkdf2Iterations: 10, saltLength: 10 })
       try {
         const accounts = JSON.parse(cryptr.decrypt(preview.value!.encrypted))
-        walletStore.restoreAccounts(accounts)
-        toAccountList()
+        walletStore.restoreAccounts(accounts, tabId)
+        close()
       } catch {
         restoreError.value = 'Please provide a valid password to decrypt your accounts data.'
       }
     }
 
     return {
-      toAccountList,
+      close,
       backupFile,
       preview,
       onPickFile,
