@@ -66,6 +66,16 @@
       }
     }
 
+    /** @param { string } mnemonic  */
+    async requestDecryptedAccount(mnemonic) {
+      await this._hasAccessGuard()
+
+      return new Promise((res) => {
+        this.on('REQUEST_DECRYPTED_ACCOUNT', res, true)
+        this.sendMessageToContent('REQUEST_DECRYPTED_ACCOUNT', mnemonic)
+      })
+    }
+
     /** @returns { Promise<boolean> } */
     async hasAccess() {
       return new Promise((res) => {

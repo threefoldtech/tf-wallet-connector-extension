@@ -322,6 +322,11 @@
     sendResponse('ok')
   })
 
+  handler.onBackground('REQUEST_DECRYPTED_ACCOUNT', ({ message, sendResponse }) => {
+    handler.sendMessageToInject('REQUEST_DECRYPTED_ACCOUNT', message)
+    sendResponse('ok')
+  })
+
   handler.onInject('HAS_ACCESS', () => {
     handler.sendMessageToInject('HAS_ACCESS', handler.isAuth(window.location.origin))
   })
@@ -336,4 +341,7 @@
   handler.onInject('GET_PUBLIC_ACCOUNTS', () => handler._notifyAccountsToInject())
   handler.onInject('LISTEN_PUBLIC_ACCOUNTS', () => handler.notifyAccountsToInject())
   handler.onInject('STOP_LISTEN_PUBLIC_ACCOUNTS', () => handler.stopNotifyAccountsToInject())
+  handler.onInject('REQUEST_DECRYPTED_ACCOUNT', (message) => {
+    handler.sendMesssageToBackground('REQUEST_DECRYPTED_ACCOUNT', message)
+  })
 }

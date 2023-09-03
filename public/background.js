@@ -90,4 +90,24 @@
     })
     sendResponse('ok')
   })
+
+  handler.on('REQUEST_DECRYPTED_ACCOUNT', async ({ message, sender, sendResponse }) => {
+    await chrome.windows.create({
+      url:
+        chrome.runtime.getURL('index.html') +
+        '#/request-decrypted-account/' +
+        message +
+        '?url=' +
+        sender.origin +
+        '&tabId=' +
+        sender.tab.id,
+      height: 600,
+      width: 535,
+      top: 50,
+      left: 50,
+      focused: true,
+      type: 'popup'
+    })
+    sendResponse('ok')
+  })
 }

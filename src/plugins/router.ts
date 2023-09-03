@@ -21,7 +21,7 @@ export const $router = createRouter({
     },
     {
       path: '/restore-accounts',
-      component: () => import('../views/RestoreAccounts.vue')
+      component: () => import('../popups/RestoreAccounts.vue')
     },
     {
       path: '/create-account',
@@ -55,6 +55,10 @@ export const $router = createRouter({
     {
       path: '/manage-account/:mnemonic',
       component: () => import('../views/ManageAccount.vue')
+    },
+    {
+      path: '/request-decrypted-account/:mnemonic',
+      component: () => import('../popups/RequestDecryptedAccount.vue')
     }
   ]
 })
