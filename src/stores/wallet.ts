@@ -65,7 +65,7 @@ export const useWalletStore = defineStore('wallet:store', {
     async addAccount(name: string, mnemonic: string, password: string) {
       const grid = await loadGrid(mnemonic)
       const cryptr = new Cryptr(md5(password), { saltLength: 10, pbkdf2Iterations: 10 })
-      const account = {
+      const account: Account = {
         name,
         visible: true,
         mnemonic: cryptr.encrypt(mnemonic),
@@ -78,29 +78,10 @@ export const useWalletStore = defineStore('wallet:store', {
       this.$state.accounts.push(account)
     },
 
-    async login(mnemonic: string) {
-      // const grid = await loadGrid(mnemonic)
-      // this.$state.account = {
-      //   name: 'test',
-      //   visible: true,
-      //   mnemonic,
-      //   ssh: await readSSH(grid),
-      //   twinId: grid.twinId,
-      //   address: grid.tfclient.address,
-      //   relay: grid.getDefaultUrls(network).relay.slice(6)
-      // }
-      // await sendMessage('Login', this.account)
-    },
-
     async updateSSH(ssh: string, mnemonic: string) {
       const index = this.findIndex(mnemonic)
       this.$state.accounts[index].ssh = ssh
       await sendMessageToContent('UPDATE_ACCOUNT', this.$state.accounts[index])
-    },
-
-    async logout() {
-      // this.$state.account = null
-      // await sendMessage('Logout', this.account)
     },
 
     async init(tabId?: number) {
