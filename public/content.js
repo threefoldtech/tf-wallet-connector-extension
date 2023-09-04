@@ -327,6 +327,11 @@
     sendResponse('ok')
   })
 
+  handler.onBackground('SELECT_DECRYPTED_ACCOUNT', ({ message, sendResponse }) => {
+    handler.sendMessageToInject('SELECT_DECRYPTED_ACCOUNT', message)
+    sendResponse('ok')
+  })
+
   handler.onInject('HAS_ACCESS', () => {
     handler.sendMessageToInject('HAS_ACCESS', handler.isAuth(window.location.origin))
   })
@@ -344,4 +349,7 @@
   handler.onInject('REQUEST_DECRYPTED_ACCOUNT', (message) => {
     handler.sendMesssageToBackground('REQUEST_DECRYPTED_ACCOUNT', message)
   })
+  handler.onInject('SELECT_DECRYPTED_ACCOUNT', () =>
+    handler.sendMesssageToBackground('SELECT_DECRYPTED_ACCOUNT')
+  )
 }

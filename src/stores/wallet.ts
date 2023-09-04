@@ -104,6 +104,7 @@ export const useWalletStore = defineStore('wallet:store', {
     },
 
     async init(tabId?: number) {
+      if (import.meta.env.DEV) return
       this.$state.accounts = await sendMessageToContent('GET_ACCOUNTS', null, tabId)
     }
   }

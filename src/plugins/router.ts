@@ -59,6 +59,10 @@ export const $router = createRouter({
     {
       path: '/request-decrypted-account/:mnemonic',
       component: () => import('../popups/RequestDecryptedAccount.vue')
+    },
+    {
+      path: '/select-decrypted-account',
+      component: () => import('../popups/SelectDecryptedAccount.vue')
     }
   ]
 })

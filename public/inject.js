@@ -102,6 +102,15 @@
       })
     }
 
+    /** @returns { Promise<Account | null> } */
+    async selectDecryptedAccount() {
+      await this._hasAccessGuard()
+      return new Promise((res) => {
+        this.on('SELECT_DECRYPTED_ACCOUNT', res, true)
+        this.sendMessageToContent('SELECT_DECRYPTED_ACCOUNT')
+      })
+    }
+
     /**
      *
      * @param { (accounts: Account[], error?: Error) => void } callback
