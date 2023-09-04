@@ -34,6 +34,11 @@ export default {
       window.close()
     }
 
+    window.addEventListener('beforeunload', async () => {
+      if (accepting.value) return
+      await sendMessageToContent('RESPONSE_ACCESS', false)
+    })
+
     return { accept, accepting, denying }
   }
 }
