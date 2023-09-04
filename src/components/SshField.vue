@@ -16,7 +16,7 @@
     />
   </validate-field>
 
-  <div class="d-flex justify-end mb-6 mt-1">
+  <div class="d-flex mb-6 mt-1">
     <v-btn
       class="mr-2"
       variant="tonal"

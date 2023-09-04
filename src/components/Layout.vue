@@ -2,6 +2,19 @@
   <v-card class="rounded-0">
     <v-card-title class="d-flex align-center justify-space-between">
       <div class="d-flex align-center">
+        <v-tooltip text="Back" :theme="theme.next">
+          <template #activator="{ props }">
+            <v-btn
+              :theme="theme.current"
+              @click="$router.push('/')"
+              icon="mdi-arrow-left"
+              variant="plain"
+              class="mr-2"
+              v-bind="props"
+              v-if="!removeBack"
+            />
+          </template>
+        </v-tooltip>
         <img
           :style="{ filter: theme.imageLightenFilter }"
           :src="ThreefoldLogo"
@@ -113,7 +126,8 @@ export default {
     noLogo: Boolean,
     search: String,
     disableActions: Boolean,
-    removeActions: Boolean
+    removeActions: Boolean,
+    removeBack: Boolean
   },
   emits: {
     'update:search': (query: string) => true || query

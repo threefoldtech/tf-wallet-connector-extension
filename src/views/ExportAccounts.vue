@@ -16,6 +16,7 @@
 import { ref } from 'vue'
 import md5 from 'md5'
 import Cryptr from 'cryptr'
+import { useRouter } from 'vue-router'
 
 import ExportLayout from '@/components/ExportLayout.vue'
 import { useWalletStore } from '@/stores'
@@ -28,8 +29,9 @@ export default {
   setup() {
     const walletStore = useWalletStore()
     const password = ref('')
+    const router = useRouter()
 
-    function exportAccounts(next: () => void) {
+    function exportAccounts() {
       const hash = md5(password.value)
       const cryptr = new Cryptr(hash, { saltLength: 10, pbkdf2Iterations: 10 })
       const encryptedAccounts = cryptr.encrypt(JSON.stringify(walletStore.accounts))
@@ -44,7 +46,7 @@ export default {
           meta: { version: VERSION, extension: window.$TF_WALLET_CONNECTOR_EXTENSION }
         })
       )
-      next()
+      router.push('/')
     }
 
     return { password, exportAccounts }

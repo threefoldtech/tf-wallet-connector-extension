@@ -1,5 +1,5 @@
 <template>
-  <ext-layout :disable-actions="loading || addingAccount">
+  <ext-layout :disable-actions="loading || addingAccount" remove-actions>
     <template #title>Import account</template>
 
     <div class="d-flex justify-center" v-if="loading">
@@ -80,12 +80,6 @@
           Import account
         </v-btn>
       </form>
-
-      <div class="mt-2 d-flex justify-center">
-        <v-btn variant="plain" @click="$router.push('/')" :disabled="!addingAccount">
-          Cancel
-        </v-btn>
-      </div>
     </template>
   </ext-layout>
 </template>

@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ref } from 'vue'
 import md5 from 'md5'
 import Cryptr from 'cryptr'
@@ -30,12 +30,14 @@ export default {
   setup() {
     const walletStore = useWalletStore()
     const route = useRoute()
+    const router = useRouter()
+
     const { mnemonic } = route.params as { mnemonic: string }
     const account = walletStore.findAccount(mnemonic)
 
     const password = ref('')
 
-    function exportAccount(next: () => void) {
+    function exportAccount() {
       const hash = md5(password.value)
       const cryptr = new Cryptr(hash, { saltLength: 10, pbkdf2Iterations: 10 })
       const encryptedAccounts = cryptr.encrypt(JSON.stringify([account]))
@@ -47,7 +49,7 @@ export default {
           meta: { version: VERSION, extension: window.$TF_WALLET_CONNECTOR_EXTENSION }
         })
       )
-      next()
+      router.push('/')
     }
 
     return { account, password, exportAccount }

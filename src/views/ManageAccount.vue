@@ -3,8 +3,6 @@
     <account-chip :account="account" remove-actions />
 
     <ssh-field :account="account" />
-
-    <v-text-field label="Twin ID" v-model="account.twinId" readonly />
   </ext-layout>
 </template>
 

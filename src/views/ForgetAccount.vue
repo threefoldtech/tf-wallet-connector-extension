@@ -9,9 +9,6 @@
     <v-btn variant="tonal" color="error" block class="mt-4" @click="forgetAccount">
       Forget Account
     </v-btn>
-    <div class="mt-2 d-flex justify-center">
-      <v-btn variant="plain" @click="toAccountList"> Cancel </v-btn>
-    </div>
   </ext-layout>
 </template>
 
@@ -29,16 +26,12 @@ export default {
     const { mnemonic } = route.params as { mnemonic: string }
     const account = walletStore.findAccount(mnemonic)
 
-    function toAccountList() {
+    function forgetAccount() {
+      walletStore.forgetAccount(mnemonic)
       router.push('/')
     }
 
-    function forgetAccount() {
-      walletStore.forgetAccount(mnemonic)
-      toAccountList()
-    }
-
-    return { account, toAccountList, forgetAccount }
+    return { account, forgetAccount }
   }
 }
 </script>

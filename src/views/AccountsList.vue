@@ -2,6 +2,7 @@
   <ext-layout
     :search="walletStore.accounts.length ? search : undefined"
     @update:search="search = $event"
+    remove-back
   >
     <template #title>Accounts</template>
 

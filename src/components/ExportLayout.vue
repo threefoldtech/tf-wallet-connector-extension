@@ -40,14 +40,10 @@
         <slot name="export-label"></slot>
       </v-btn>
     </form>
-    <div class="mt-2 d-flex justify-center">
-      <v-btn variant="plain" @click="toAccountList"> Cancel </v-btn>
-    </div>
   </ext-layout>
 </template>
 
 <script lang="ts">
-import { useRouter } from 'vue-router'
 import { ref, type PropType } from 'vue'
 
 import type { Account } from '@/types'
@@ -61,21 +57,16 @@ export default {
   },
   emits: {
     'update:model-value': (value: string) => true || value,
-    export: (next: () => void) => true || next
+    export: () => true
   },
   setup(_, { emit }) {
-    const router = useRouter()
     const passwordValid = ref(false)
 
-    function toAccountList() {
-      router.push('/')
-    }
-
     function onExport() {
-      emit('export', toAccountList)
+      emit('export')
     }
 
-    return { passwordValid, toAccountList, onExport }
+    return { passwordValid, onExport }
   }
 }
 </script>

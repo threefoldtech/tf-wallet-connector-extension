@@ -1,5 +1,5 @@
 <template>
-  <ext-layout :disable-actions="loading">
+  <ext-layout :disable-actions="loading" remove-actions>
     <template #title>Create new account</template>
 
     <h3 class="mb-8">Activate account on network</h3>
@@ -25,10 +25,6 @@
     >
       Activate my account
     </v-btn>
-
-    <div class="mt-2 d-flex justify-center">
-      <v-btn variant="plain" @click="$router.push('/')" :disabled="loading"> Cancel </v-btn>
-    </div>
   </ext-layout>
 </template>
 

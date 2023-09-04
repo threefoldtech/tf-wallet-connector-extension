@@ -1,5 +1,5 @@
 <template>
-  <ext-layout>
+  <ext-layout remove-back remove-actions>
     <template #title>Restore accounts from JSON</template>
 
     <v-file-input
@@ -69,10 +69,6 @@
           Restore accounts
         </v-btn>
       </form>
-
-      <div class="mt-2 d-flex justify-center">
-        <v-btn variant="plain" @click="close()"> Cancel </v-btn>
-      </div>
     </template>
   </ext-layout>
 </template>
@@ -125,10 +121,6 @@ export default {
     const password = ref('')
     const passwordValid = ref(false)
 
-    function close() {
-      window.close()
-    }
-
     const restoreError = ref('')
     async function restoreAccounts() {
       const hash = md5(password.value)
@@ -136,14 +128,13 @@ export default {
       try {
         const accounts = JSON.parse(cryptr.decrypt(preview.value!.encrypted))
         await walletStore.restoreAccounts(accounts)
-        close()
+        window.close()
       } catch {
         restoreError.value = 'Please provide a valid password to decrypt your accounts data.'
       }
     }
 
     return {
-      close,
       backupFile,
       preview,
       onPickFile,

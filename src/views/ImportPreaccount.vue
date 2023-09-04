@@ -1,5 +1,5 @@
 <template>
-  <ext-layout :disable-actions="loading">
+  <ext-layout :disable-actions="loading" remove-actions>
     <template #title>Import account</template>
 
     <form @submit.prevent="$router.push('/import-preaccount/' + mnemonic)">
@@ -47,10 +47,6 @@
         Next step
       </v-btn>
     </form>
-
-    <div class="mt-2 d-flex justify-center">
-      <v-btn variant="plain" @click="$router.push('/')" :disabled="loading"> Cancel </v-btn>
-    </div>
   </ext-layout>
 
   <terms-dialog v-model="ShowTermsDialog" @accept="activate()" v-if="ShowTermsDialog" />

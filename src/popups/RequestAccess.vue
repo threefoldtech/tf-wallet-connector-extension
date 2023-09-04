@@ -1,5 +1,5 @@
 <template>
-  <ext-layout remove-actions>
+  <ext-layout remove-back remove-actions>
     <template #title>Request access</template>
     <p>Do you want to give `{{ $route.query.url || '' }}` access to sign transactions?</p>
     <v-btn
@@ -14,11 +14,6 @@
     >
       Give Access
     </v-btn>
-    <div class="mt-2 d-flex justify-center">
-      <v-btn variant="plain" @click="deny()" :loading="denying" :disabled="accepting">
-        Cancel
-      </v-btn>
-    </div>
   </ext-layout>
 </template>
 
@@ -39,13 +34,7 @@ export default {
       window.close()
     }
 
-    async function deny() {
-      denying.value = true
-      await sendMessageToContent('RESPONSE_ACCESS', false)
-      window.close()
-    }
-
-    return { accept, deny, accepting, denying }
+    return { accept, accepting, denying }
   }
 }
 </script>

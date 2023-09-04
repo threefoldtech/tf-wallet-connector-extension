@@ -1,5 +1,5 @@
 <template>
-  <ext-layout>
+  <ext-layout remove-actions>
     <template #title>Create new account</template>
 
     <v-alert type="warning" variant="tonal" class="mb-4">
@@ -36,10 +36,6 @@
     >
       Next step
     </v-btn>
-
-    <div class="mt-2 d-flex justify-center">
-      <v-btn variant="plain" @click="$router.push('/')"> Cancel </v-btn>
-    </div>
   </ext-layout>
 </template>
 
