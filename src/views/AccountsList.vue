@@ -9,12 +9,13 @@
     <template v-if="walletStore.accounts.length > 0 && accounts.length > 0">
       <account-chip v-for="account in accounts" :key="account.mnemonic" :account="account" />
     </template>
-    <v-card type="info" variant="tonal" v-else>
-      <template v-if="walletStore.accounts.length > 0">
-        <v-card-text>No account matches your search.</v-card-text>
-      </template>
-      <v-card-text v-else>Please add an account.</v-card-text>
-    </v-card>
+    <div v-else class="d-flex justify-center align-center h-100 text-h6">
+      {{
+        walletStore.accounts.length > 0
+          ? 'No account matches your search.'
+          : 'No accounts added yet!'
+      }}
+    </div>
   </ext-layout>
 </template>
 
