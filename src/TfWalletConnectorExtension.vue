@@ -10,6 +10,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 import { useWalletStore } from '@/stores'
 import { useVuetifyTheme } from '@/hooks'
+import { initTabId } from '@/utils'
 
 export default {
   name: 'tf-wallet-connector-extension',
@@ -24,8 +25,10 @@ export default {
 
       const id = +(route.query.tabId || 0)
       const tabId = id > 0 ? id : undefined
+      initTabId(tabId)
+
       theme.value.load()
-      walletStore.init(tabId)
+      walletStore.init()
     })
 
     return { walletStore }

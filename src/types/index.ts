@@ -10,3 +10,5 @@ export interface Account {
   visible: boolean
   networks: Network[]
 }
+
+export type AuthList = { [url: string]: boolean }

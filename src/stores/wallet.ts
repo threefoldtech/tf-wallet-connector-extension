@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import md5 from 'md5'
 import Cryptr from 'cryptr'
 
-import { network, loadGrid, sendMessageToContent } from '@/utils'
+import { network, loadGrid, sendMessageToContent, storage } from '@/utils'
 import type { Account } from '@/types'
 
 export interface WalletStore {
@@ -41,26 +41,26 @@ export const useWalletStore = defineStore('wallet:store', {
     async toggleVisibility(mnemonic: string) {
       const index = this.findIndex(mnemonic)
       this.$state.accounts[index].visible = !this.accounts[index].visible
-      await sendMessageToContent('UPDATE_ACCOUNT', this.$state.accounts[index])
+      return storage.setAccounts(this.$state.accounts)
     },
 
     async forgetAccount(mnemonic: string) {
       const index = this.findIndex(mnemonic)
-      const [account] = this.$state.accounts.splice(index, 1)
-      await sendMessageToContent('DELETE_ACCOUNT', account)
+      this.$state.accounts.splice(index, 1)
+      return storage.setAccounts(this.$state.accounts)
     },
 
     async renameAccount(mnemonic: string, name: string) {
       const index = this.findIndex(mnemonic)
       this.$state.accounts[index].name = name
-      await sendMessageToContent('UPDATE_ACCOUNT', this.$state.accounts[index])
+      return storage.setAccounts(this.$state.accounts)
     },
 
     async restoreAccounts(accounts: Account[]) {
       const accountSet = new Set(this.accounts.map((account) => account.mnemonic))
       const newAccounts = accounts.filter((account) => !accountSet.has(account.mnemonic))
-      await sendMessageToContent('ADD_ACCOUNTS', newAccounts)
       this.$state.accounts.push(...newAccounts)
+      return storage.setAccounts(this.$state.accounts)
     },
 
     async addAccount(name: string, mnemonic: string, password: string) {
@@ -74,21 +74,21 @@ export const useWalletStore = defineStore('wallet:store', {
         twinId: grid.twinId,
         address: grid.tfclient.address,
         relay: grid.getDefaultUrls(network).relay.slice(6),
-        networks: []
+        networks: ['dev']
       }
-      await sendMessageToContent('ADD_ACCOUNT', account)
       this.$state.accounts.push(account)
+      return storage.setAccounts(this.$state.accounts)
     },
 
     async updateSSH(ssh: string, mnemonic: string) {
       const index = this.findIndex(mnemonic)
       this.$state.accounts[index].ssh = ssh
-      await sendMessageToContent('UPDATE_ACCOUNT', this.$state.accounts[index])
+      return storage.setAccounts(this.$state.accounts)
     },
 
-    async init(tabId?: number) {
+    async init() {
       if (import.meta.env.DEV) return
-      this.$state.accounts = await sendMessageToContent('GET_ACCOUNTS', null, tabId)
+      this.$state.accounts = await storage.accounts
     }
   }
 })

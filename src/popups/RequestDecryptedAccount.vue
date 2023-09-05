@@ -34,10 +34,12 @@ import { useRoute } from 'vue-router'
 import md5 from 'md5'
 import Cryptr from 'cryptr'
 import { sendMessageToContent } from '@/utils'
+import { useWalletStore } from '@/stores'
 
 export default {
   name: 'RequestDecryptedAccount',
   setup() {
+    const walletStore = useWalletStore()
     const route = useRoute()
     const password = ref('')
     const mnemonicError = ref('')
@@ -49,7 +51,11 @@ export default {
 
       try {
         const mnemonic = cryptr.decrypt(route.params.mnemonic as string)
-        await sendMessageToContent('REQUEST_DECRYPTED_ACCOUNT', mnemonic)
+
+        await sendMessageToContent('REQUEST_DECRYPTED_ACCOUNT', {
+          ...walletStore.findAccount(route.params.mnemonic as string),
+          mnemonic
+        })
         _done = true
         window.close()
       } catch {

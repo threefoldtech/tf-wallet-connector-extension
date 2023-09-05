@@ -60,7 +60,7 @@
 <script lang="ts">
 import { ref, onMounted } from 'vue'
 
-import { sendMessageToContent } from '@/utils'
+import { storage } from '@/utils'
 import { useVuetifyTheme } from '@/hooks'
 import { computed } from 'vue'
 
@@ -76,20 +76,20 @@ export default {
       if (import.meta.env.DEV) {
         _accessList.value = { 'http://localhost:5174': true, 'http://localhost:5173': false }
       } else {
-        _accessList.value = await sendMessageToContent('GET_AUTH_LIST')
+        _accessList.value = await storage.authList
       }
 
       loading.value = false
     })
 
     async function togglePermission(url: string) {
-      await sendMessageToContent('TOGGLE_ACCESS_PERMISSION', url)
       _accessList.value[url] = !_accessList.value[url]
+      await storage.setAuthList(_accessList.value)
     }
 
     async function deletePermission(url: string) {
-      await sendMessageToContent('DELETE_ACCESS_PERMISSION', url)
       delete _accessList.value[url]
+      await storage.setAuthList(_accessList.value)
     }
 
     const accessList = computed(() => {

@@ -122,7 +122,7 @@
         .then(() => {
           const _listenToPublicAccounts = () => {
             this.on(
-              'GET_PUBLIC_ACCOUNTS',
+              'LISTEN_PUBLIC_ACCOUNTS',
               (accounts) => {
                 if (!_done) {
                   callback(accounts)
@@ -145,6 +145,44 @@
         if (!_done) {
           _done = true
           this.sendMessageToContent('STOP_LISTEN_PUBLIC_ACCOUNTS')
+        }
+      }
+    }
+
+    /**
+     *
+     * @param { (authList: {[url: string]: boolean}, error?: Error) => void } callback
+     * @returns { () => void }
+     */
+    listenToAuthList(callback) {
+      let _done = false
+      this._hasAccessGuard()
+        .then(() => {
+          const _listenToAuthList = () => {
+            this.on(
+              'LISTEN_AUTH_LIST',
+              (authList) => {
+                if (!_done) {
+                  callback(authList)
+                  _listenToAuthList()
+                }
+              },
+              true
+            )
+          }
+
+          _listenToAuthList()
+          this.sendMessageToContent('LISTEN_AUTH_LIST')
+        })
+        .catch((error) => {
+          _done = true
+          callback({}, error)
+        })
+
+      return () => {
+        if (!_done) {
+          _done = true
+          this.sendMessageToContent('STOP_LISTEN_AUTH_LIST')
         }
       }
     }
