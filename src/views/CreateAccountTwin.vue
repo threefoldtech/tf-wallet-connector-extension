@@ -21,11 +21,13 @@
       size="large"
       :disabled="!done"
       :loading="loading"
-      @click="activateAccount"
+      @click="ShowTermsDialog = true"
     >
       Activate my account
     </v-btn>
   </ext-layout>
+
+  <terms-dialog v-model="ShowTermsDialog" @accept="activateAccount()" v-if="ShowTermsDialog" />
 </template>
 
 <script lang="ts">
@@ -44,6 +46,8 @@ export default {
     const route = useRoute()
     const router = useRouter()
 
+    const ShowTermsDialog = ref(false)
+
     const error = ref('')
     async function activateAccount() {
       error.value = ''
@@ -60,7 +64,7 @@ export default {
       }
     }
 
-    return { done, loading, activateAccount, error }
+    return { done, loading, activateAccount, error, ShowTermsDialog }
   }
 }
 </script>
