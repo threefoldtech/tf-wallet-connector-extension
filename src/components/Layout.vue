@@ -36,6 +36,8 @@
         :model-value="$props.search"
         @update:model-value="$emit('update:search', $event)"
         @click:clear="$emit('update:search', '')"
+        hide-details
+        :style="{ marginTop: '-20px' }"
       />
 
       <v-menu transition="slide-y-transition" location="bottom right" v-if="!removeActions">
@@ -106,7 +108,7 @@
 
     <v-divider />
 
-    <v-card-text :style="{ overflowY: 'auto', height: '510px' }">
+    <v-card-text :style="{ overflowY: 'auto', height: '535px' }">
       <slot></slot>
     </v-card-text>
   </v-card>
