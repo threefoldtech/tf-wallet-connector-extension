@@ -40,85 +40,87 @@
         :style="{ marginTop: '-20px' }"
       />
 
-      <v-menu transition="slide-y-transition" location="bottom right" v-if="!removeActions">
-        <template v-slot:activator="{ props }">
-          <v-tooltip text="Account" :theme="theme.next">
-            <template #activator="{ props: tooltipProps }">
-              <v-btn
-                :disabled="disableActions"
-                :theme="theme.current"
-                icon="mdi-plus-circle"
-                variant="flat"
-                v-bind="$combineProps(props, tooltipProps)"
-              />
-            </template>
-          </v-tooltip>
-        </template>
-        <v-list>
-          <v-list-item to="/create-account">
-            <template #prepend>
-              <v-icon icon="mdi-account-plus" />
-            </template>
-            <v-list-item-title>Create new account</v-list-item-title>
-          </v-list-item>
+      <div>
+        <v-menu transition="slide-y-transition" location="bottom right" v-if="!removeActions">
+          <template v-slot:activator="{ props }">
+            <v-tooltip text="Account" :theme="theme.next">
+              <template #activator="{ props: tooltipProps }">
+                <v-btn
+                  :disabled="disableActions"
+                  :theme="theme.current"
+                  icon="mdi-account"
+                  variant="flat"
+                  v-bind="$combineProps(props, tooltipProps)"
+                />
+              </template>
+            </v-tooltip>
+          </template>
+          <v-list>
+            <v-list-item to="/create-account">
+              <template #prepend>
+                <v-icon icon="mdi-account-plus" />
+              </template>
+              <v-list-item-title>Create new account</v-list-item-title>
+            </v-list-item>
 
-          <v-list-item to="/import-preaccount">
-            <template #prepend>
-              <v-icon icon="mdi-key-variant" />
-            </template>
-            <v-list-item-title>Import account from pre-existing seed</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+            <v-list-item to="/import-preaccount">
+              <template #prepend>
+                <v-icon icon="mdi-key-variant" />
+              </template>
+              <v-list-item-title>Import account from pre-existing seed</v-list-item-title>
+            </v-list-item>
 
-      <v-menu transition="slide-y-transition" location="bottom right" v-if="!removeActions">
-        <template v-slot:activator="{ props }">
-          <v-tooltip text="Manage" :theme="theme.next">
-            <template #activator="{ props: tooltipProps }">
-              <v-btn
-                :disabled="disableActions"
-                :theme="theme.current"
-                icon="mdi-cog"
-                variant="flat"
-                v-bind="$combineProps(props, tooltipProps)"
-              />
-            </template>
-          </v-tooltip>
-        </template>
-        <v-list>
-          <v-list-item to="/export-accounts">
-            <template #prepend>
-              <v-icon icon="mdi-export" />
-            </template>
-            <v-list-item-title>Export all account</v-list-item-title>
-          </v-list-item>
+            <v-divider />
 
-          <v-list-item @click="openRestoreAccounts">
-            <template #prepend>
-              <v-icon icon="mdi-file-upload" />
-            </template>
-            <v-list-item-title>Restore account from backup JSON file</v-list-item-title>
-          </v-list-item>
+            <v-list-item to="/export-accounts">
+              <template #prepend>
+                <v-icon icon="mdi-export" />
+              </template>
+              <v-list-item-title>Export all account</v-list-item-title>
+            </v-list-item>
 
-          <v-divider />
+            <v-list-item @click="openRestoreAccounts">
+              <template #prepend>
+                <v-icon icon="mdi-file-upload" />
+              </template>
+              <v-list-item-title>Restore account from backup JSON file</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
 
-          <v-list-item to="/manage-access">
-            <template #prepend>
-              <v-icon icon="mdi-security" />
-            </template>
-            <v-list-item-title>Manage websites access</v-list-item-title>
-          </v-list-item>
+        <v-menu transition="slide-y-transition" location="bottom right" v-if="!removeActions">
+          <template v-slot:activator="{ props }">
+            <v-tooltip text="Setting" :theme="theme.next">
+              <template #activator="{ props: tooltipProps }">
+                <v-btn
+                  :disabled="disableActions"
+                  :theme="theme.current"
+                  icon="mdi-cog"
+                  variant="flat"
+                  v-bind="$combineProps(props, tooltipProps)"
+                />
+              </template>
+            </v-tooltip>
+          </template>
+          <v-list>
+            <v-list-item to="/manage-access">
+              <template #prepend>
+                <v-icon icon="mdi-security" />
+              </template>
+              <v-list-item-title>Manage websites access</v-list-item-title>
+            </v-list-item>
 
-          <v-divider />
+            <v-divider />
 
-          <v-list-item @click="theme.toggle">
-            <template #prepend>
-              <v-icon :icon="theme.icon" />
-            </template>
-            <v-list-item-title>Switch to {{ theme.next }} mode</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+            <v-list-item @click="theme.toggle">
+              <template #prepend>
+                <v-icon :icon="theme.icon" />
+              </template>
+              <v-list-item-title>Switch to {{ theme.next }} mode</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
     </v-card-title>
 
     <v-divider />
