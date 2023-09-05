@@ -7,7 +7,7 @@
     </div>
 
     <template v-else>
-      <account-chip :account="fakeAccount" remove-actions />
+      <account-chip :account="{ ...fakeAccount, name: name ? name : '<Unknown>' }" remove-actions />
       <form @submit.prevent="addAccount">
         <validate-field
           :value="name"
@@ -103,7 +103,6 @@ export default {
     onMounted(async () => {
       const grid = await loadGrid(mnemonic)
       fakeAccount.value = {
-        name: '<unknown>',
         mnemonic,
         address: grid.tfclient.address
       } as Account

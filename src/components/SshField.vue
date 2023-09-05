@@ -23,7 +23,14 @@
       color="secondary"
       :disabled="!!ssh"
       :loading="generatingSSh"
-      @click="askForPassword = true"
+      @click="
+        () => {
+          if (noPassword) {
+            return generateSSH(account.mnemonic)
+          }
+          askForPassword = true
+        }
+      "
     >
       Generate SSH Keys
     </v-btn>
@@ -32,7 +39,14 @@
       color="primary"
       :disabled="ssh === account.ssh || !ssh"
       :loading="updatingSSH"
-      @click="askForPassword = true"
+      @click="
+        () => {
+          if (noPassword) {
+            return updateSSH(account.mnemonic)
+          }
+          askForPassword = true
+        }
+      "
     >
       Update Public SSH Key
     </v-btn>
@@ -101,7 +115,11 @@ export default {
       type: Object as PropType<Account>,
       required: true
     },
-    loading: Boolean
+    loading: Boolean,
+    noPassword: {
+      type: Boolean,
+      default: () => false
+    }
   },
   emits: { 'update:loading': (value: boolean) => true || value },
   setup(props, { emit }) {
@@ -136,7 +154,9 @@ export default {
     async function _updateSSH(mnemonic: string, newSsh: string) {
       const grid = await loadGrid(mnemonic)
       await storeSSH(grid, newSsh)
-      await walletStore.updateSSH(newSsh, props.account.mnemonic)
+      if (!props.noPassword) {
+        await walletStore.updateSSH(newSsh, props.account.mnemonic)
+      }
     }
 
     const disableSSH = computed(() => generatingSSh.value || updatingSSH.value)

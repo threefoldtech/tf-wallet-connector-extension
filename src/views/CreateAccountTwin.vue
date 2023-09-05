@@ -35,14 +35,12 @@ import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { activateAccountAndCreateTwin } from '@/utils'
-import { useWalletStore } from '@/stores'
 
 export default {
   name: 'CreateAccountTwin',
   setup() {
     const done = ref(false)
     const loading = ref(false)
-    const walletStore = useWalletStore()
     const route = useRoute()
     const router = useRouter()
 
@@ -55,8 +53,7 @@ export default {
         loading.value = true
         const account = route.params as { name: string; mnemonic: string; password: string }
         await activateAccountAndCreateTwin(account.mnemonic)
-        await walletStore.addAccount(account.name, account.mnemonic, account.password)
-        router.push('/')
+        router.push(`/create-account-ssh/${account.mnemonic}/${account.name}/${account.password}`)
       } catch (err) {
         error.value = (err as Error).message
       } finally {

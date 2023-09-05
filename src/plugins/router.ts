@@ -36,6 +36,10 @@ export const $router = createRouter({
       component: () => import('../views/CreateAccountTwin.vue')
     },
     {
+      path: '/create-account-ssh/:mnemonic/:name/:password',
+      component: () => import('../views/CreateAccountSSH.vue')
+    },
+    {
       path: '/import-preaccount',
       component: () => import('../views/ImportPreaccount.vue')
     },

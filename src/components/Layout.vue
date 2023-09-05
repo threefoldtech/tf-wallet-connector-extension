@@ -1,6 +1,6 @@
 <template>
   <v-card class="rounded-0">
-    <v-card-title class="d-flex align-center justify-space-between">
+    <v-card-title class="d-flex align-center justify-space-between" :style="{ height: '64px' }">
       <div class="d-flex align-center">
         <v-tooltip text="Back" :theme="theme.next">
           <template #activator="{ props }">
