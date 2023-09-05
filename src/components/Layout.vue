@@ -42,12 +42,12 @@
 
       <v-menu transition="slide-y-transition" location="bottom right" v-if="!removeActions">
         <template v-slot:activator="{ props }">
-          <v-tooltip text="Settings" :theme="theme.next">
+          <v-tooltip text="Account" :theme="theme.next">
             <template #activator="{ props: tooltipProps }">
               <v-btn
                 :disabled="disableActions"
                 :theme="theme.current"
-                icon="mdi-cog"
+                icon="mdi-plus-circle"
                 variant="flat"
                 v-bind="$combineProps(props, tooltipProps)"
               />
@@ -62,20 +62,35 @@
             <v-list-item-title>Create new account</v-list-item-title>
           </v-list-item>
 
-          <v-divider />
-
-          <v-list-item to="/export-accounts">
-            <template #prepend>
-              <v-icon icon="mdi-export" />
-            </template>
-            <v-list-item-title>Export all account</v-list-item-title>
-          </v-list-item>
-
           <v-list-item to="/import-preaccount">
             <template #prepend>
               <v-icon icon="mdi-key-variant" />
             </template>
             <v-list-item-title>Import account from pre-existing seed</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <v-menu transition="slide-y-transition" location="bottom right" v-if="!removeActions">
+        <template v-slot:activator="{ props }">
+          <v-tooltip text="Manage" :theme="theme.next">
+            <template #activator="{ props: tooltipProps }">
+              <v-btn
+                :disabled="disableActions"
+                :theme="theme.current"
+                icon="mdi-cog"
+                variant="flat"
+                v-bind="$combineProps(props, tooltipProps)"
+              />
+            </template>
+          </v-tooltip>
+        </template>
+        <v-list>
+          <v-list-item to="/export-accounts">
+            <template #prepend>
+              <v-icon icon="mdi-export" />
+            </template>
+            <v-list-item-title>Export all account</v-list-item-title>
           </v-list-item>
 
           <v-list-item @click="openRestoreAccounts">
