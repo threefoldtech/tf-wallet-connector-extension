@@ -6,8 +6,16 @@
       `{{ $route.query.url || '' }}` requesting a decrypted account to use
     </v-alert>
 
+    <v-switch
+      color="primary"
+      inset
+      label="Show public accounts only"
+      v-model="onlyPublic"
+      class="mt-4"
+    />
+
     <v-list>
-      <template v-for="account in walletStore.accounts" :key="account.address">
+      <template v-for="account in accounts" :key="account.address">
         <v-list-item @click="selectedAccount = account" class="pt-4">
           <account-chip :account="account" remove-actions />
         </v-list-item>
@@ -82,6 +90,7 @@ import { sendMessageToContent } from '@/utils'
 import { ref } from 'vue'
 import md5 from 'md5'
 import Cryptr from 'cryptr'
+import { computed } from 'vue'
 
 export default {
   name: 'SelectDecryptedAccount',
@@ -91,6 +100,7 @@ export default {
     const password = ref('')
     const passwordValid = ref(false)
     const passwordError = ref('')
+    const onlyPublic = ref(true)
 
     let _done = false
     async function decryptAndSend() {
@@ -115,7 +125,23 @@ export default {
       sendMessageToContent('SELECT_DECRYPTED_ACCOUNT', null)
     })
 
-    return { walletStore, selectedAccount, password, passwordValid, passwordError, decryptAndSend }
+    const accounts = computed(() => {
+      if (onlyPublic.value) {
+        return walletStore.accounts.filter((account) => account.visible)
+      }
+      return walletStore.accounts
+    })
+
+    return {
+      walletStore,
+      selectedAccount,
+      password,
+      passwordValid,
+      passwordError,
+      decryptAndSend,
+      onlyPublic,
+      accounts
+    }
   }
 }
 </script>
