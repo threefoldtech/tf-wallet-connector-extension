@@ -21,7 +21,8 @@ export const useWalletStore = defineStore('wallet:store', {
               relay: 'test',
               ssh: 's',
               twinId: 0,
-              visible: true
+              visible: true,
+              networks: ['dev', 'qa', 'main']
             }
           ]
         : []
@@ -72,7 +73,8 @@ export const useWalletStore = defineStore('wallet:store', {
         ssh: '',
         twinId: grid.twinId,
         address: grid.tfclient.address,
-        relay: grid.getDefaultUrls(network).relay.slice(6)
+        relay: grid.getDefaultUrls(network).relay.slice(6),
+        networks: []
       }
       await sendMessageToContent('ADD_ACCOUNT', account)
       this.$state.accounts.push(account)

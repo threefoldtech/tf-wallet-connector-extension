@@ -100,6 +100,19 @@
         </v-menu>
       </div>
     </v-card-text>
+    <v-divider />
+
+    <v-card-item>
+      <v-chip
+        v-for="network in networks"
+        :key="network"
+        color="secondary"
+        size="small"
+        class="rounded mr-1 font-weight-bold"
+      >
+        <span class="text-capitalize">{{ network }}net</span>
+      </v-chip>
+    </v-card-item>
   </v-card>
 </template>
 
@@ -109,6 +122,7 @@ import { type PropType, ref } from 'vue'
 import type { Account } from '@/types'
 import { useVuetifyTheme } from '@/hooks'
 import { useWalletStore } from '@/stores'
+import { computed } from 'vue'
 
 export default {
   name: 'AccountChip',
@@ -136,7 +150,21 @@ export default {
       walletStore.renameAccount(props.account.mnemonic, name.value)
     }
 
-    return { showCopyNotification, theme, walletStore, rename, name, enableRename, renameAccount }
+    const networks = computed(() => {
+      const networkSet = new Set<string>(props.account.networks)
+      return ['main', 'test', 'qa', 'dev'].filter((network) => networkSet.has(network))
+    })
+
+    return {
+      showCopyNotification,
+      theme,
+      walletStore,
+      rename,
+      name,
+      enableRename,
+      renameAccount,
+      networks
+    }
   }
 }
 </script>

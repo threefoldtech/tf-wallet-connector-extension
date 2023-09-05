@@ -1,3 +1,5 @@
+export type Network = 'dev' | 'test' | 'qa' | 'main'
+
 export interface Account {
   name: string
   mnemonic: string
@@ -6,4 +8,5 @@ export interface Account {
   ssh: string
   relay: string
   visible: boolean
+  networks: Network[]
 }
