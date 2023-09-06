@@ -210,6 +210,11 @@
     sendResponse('ok')
   })
 
+  handler.onBackground('SELECT_ACCOUNT', ({ message, sendResponse }) => {
+    handler.sendMessageToInject('SELECT_ACCOUNT', message)
+    sendResponse('ok')
+  })
+
   handler.onInject('HAS_ACCESS', async () => {
     handler.sendMessageToInject('HAS_ACCESS', await handler.isAuth(window.location.origin))
   })
@@ -224,6 +229,12 @@
   handler.onInject('GET_PUBLIC_ACCOUNTS', async () => {
     handler.sendMessageToInject('GET_PUBLIC_ACCOUNTS', await handler.getPublicAccounts())
   })
+
+  handler.onInject('GET_AUTH_LIST', async () => {
+    handler.sendMessageToInject('GET_AUTH_LIST', await handler.getAuthList())
+  })
+
+  handler.onInject('SELECT_ACCOUNT', () => handler.sendMesssageToBackground('SELECT_ACCOUNT'))
 
   handler.onInject('LISTEN_PUBLIC_ACCOUNTS', async () => {
     handler.notifyAccountsToInject()

@@ -7,7 +7,7 @@
   /** @typedef { import("./types").Account } Account */
 
   class InjectHandler {
-    /** @type { {[key: string]: (data?: Message['data']) => void }} */ _handlers = {}
+    /** @type { {[key: string]: ((data?: Message['data']) => void)[] }} */ _handlers = {}
 
     constructor() {
       document.addEventListener(
@@ -19,17 +19,13 @@
     /**
      * @param { Commands } event
      * @param { (data?: Message['data']) => void } handler
-     * @param { boolean } [once]
      */
-    on(event, handler, once) {
-      if (once) {
-        this._handlers[event] = (...args) => {
-          delete this._handlers[event]
-          handler(...args)
-        }
-        return
+    once(event, handler) {
+      if (!Array.isArray(this._handlers[event])) {
+        this._handlers[event] = []
       }
-      this._handlers[event] = handler
+
+      this._handlers[event].push(handler)
     }
 
     /**
@@ -60,7 +56,11 @@
         message.extension === window.$TF_WALLET_CONNECTOR_EXTENSION
       ) {
         if (message.event in this._handlers) {
-          return this._handlers[message.event](message.data)
+          const handlers = this._handlers[message.event]
+          if (handlers && handlers.length) {
+            const [fn] = handlers.splice(0, 1)
+            return fn(message.data)
+          }
         }
         console.log(`[TF_WALLET_CONNECTOR_EXTENSION] Unsupported event ${message.event}.`)
       }
@@ -71,7 +71,7 @@
       await this._hasAccessGuard()
 
       return new Promise((res) => {
-        this.on('REQUEST_DECRYPTED_ACCOUNT', res, true)
+        this.once('REQUEST_DECRYPTED_ACCOUNT', res)
         this.sendMessageToContent('REQUEST_DECRYPTED_ACCOUNT', mnemonic)
       })
     }
@@ -79,7 +79,7 @@
     /** @returns { Promise<boolean> } */
     async hasAccess() {
       return new Promise((res) => {
-        this.on('HAS_ACCESS', res, true)
+        this.once('HAS_ACCESS', res)
         this.sendMessageToContent('HAS_ACCESS')
       })
     }
@@ -87,7 +87,7 @@
     /** @returns { Promise<boolean> } */
     async requestAccess() {
       return new Promise((res) => {
-        this.on('RESPONSE_ACCESS', res, true)
+        this.once('RESPONSE_ACCESS', res)
         this.sendMessageToContent('REQUEST_ACCESS')
       })
     }
@@ -97,8 +97,28 @@
       await this._hasAccessGuard()
 
       return new Promise((res) => {
-        this.on('GET_PUBLIC_ACCOUNTS', res, true)
+        this.once('GET_PUBLIC_ACCOUNTS', res)
         this.sendMessageToContent('GET_PUBLIC_ACCOUNTS')
+      })
+    }
+
+    /** @returns { Promise<{[url: string]: boolean}> }} */
+    async getAuthList() {
+      await this._hasAccessGuard()
+
+      return new Promise((res) => {
+        this.once('GET_AUTH_LIST', res)
+        this.sendMessageToContent('GET_AUTH_LIST')
+      })
+    }
+
+    /** @returns { Promise<Account | null> } */
+    async selectAccount() {
+      await this._hasAccessGuard()
+
+      return new Promise((res) => {
+        this.once('SELECT_ACCOUNT', res)
+        this.sendMessageToContent('SELECT_ACCOUNT')
       })
     }
 
@@ -106,7 +126,7 @@
     async selectDecryptedAccount() {
       await this._hasAccessGuard()
       return new Promise((res) => {
-        this.on('SELECT_DECRYPTED_ACCOUNT', res, true)
+        this.once('SELECT_DECRYPTED_ACCOUNT', res)
         this.sendMessageToContent('SELECT_DECRYPTED_ACCOUNT')
       })
     }
@@ -121,16 +141,12 @@
       this._hasAccessGuard()
         .then(() => {
           const _listenToPublicAccounts = () => {
-            this.on(
-              'LISTEN_PUBLIC_ACCOUNTS',
-              (accounts) => {
-                if (!_done) {
-                  callback(accounts)
-                  _listenToPublicAccounts()
-                }
-              },
-              true
-            )
+            this.once('LISTEN_PUBLIC_ACCOUNTS', (accounts) => {
+              if (!_done) {
+                callback(accounts)
+                _listenToPublicAccounts()
+              }
+            })
           }
 
           _listenToPublicAccounts()
@@ -159,16 +175,12 @@
       this._hasAccessGuard()
         .then(() => {
           const _listenToAuthList = () => {
-            this.on(
-              'LISTEN_AUTH_LIST',
-              (authList) => {
-                if (!_done) {
-                  callback(authList)
-                  _listenToAuthList()
-                }
-              },
-              true
-            )
+            this.once('LISTEN_AUTH_LIST', (authList) => {
+              if (!_done) {
+                callback(authList)
+                _listenToAuthList()
+              }
+            })
           }
 
           _listenToAuthList()
@@ -185,6 +197,10 @@
           this.sendMessageToContent('STOP_LISTEN_AUTH_LIST')
         }
       }
+    }
+
+    async sign() {
+      console.log('[SIGN] event is not yet implemented.')
     }
 
     async _hasAccessGuard() {

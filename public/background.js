@@ -129,4 +129,24 @@
     })
     sendResponse('ok')
   })
+
+  handler.on('SELECT_ACCOUNT', async ({ sender, sendResponse }) => {
+    await chrome.windows.create({
+      url:
+        chrome.runtime.getURL('index.html') +
+        '#/select-decrypted-account' +
+        '?url=' +
+        sender.origin +
+        '&tabId=' +
+        sender.tab.id +
+        '&decrypted=false',
+      height: 600,
+      width: 535,
+      top: 50,
+      left: 50,
+      focused: true,
+      type: 'popup'
+    })
+    sendResponse('ok')
+  })
 }

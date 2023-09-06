@@ -16,7 +16,18 @@
 
     <v-list>
       <template v-for="account in accounts" :key="account.address">
-        <v-list-item @click="selectedAccount = account" class="pt-4">
+        <v-list-item
+          @click="
+            () => {
+              selectedAccount = account
+
+              if (!decrypted) {
+                decryptAndSend()
+              }
+            }
+          "
+          class="pt-4"
+        >
           <account-chip :account="account" remove-actions />
         </v-list-item>
         <v-divider />
@@ -32,6 +43,7 @@
           passwordError = ''
         }
       "
+      v-if="decrypted"
     >
       <v-card>
         <v-card-text>
@@ -91,6 +103,7 @@ import { ref } from 'vue'
 import md5 from 'md5'
 import Cryptr from 'cryptr'
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 
 export default {
   name: 'SelectDecryptedAccount',
@@ -101,9 +114,18 @@ export default {
     const passwordValid = ref(false)
     const passwordError = ref('')
     const onlyPublic = ref(true)
+    const route = useRoute()
+
+    const decrypted = route.query.decrypted !== 'false'
 
     let _done = false
     async function decryptAndSend() {
+      if (!decrypted) {
+        await sendMessageToContent('SELECT_ACCOUNT', selectedAccount.value)
+        _done = true
+        window.close()
+      }
+
       const hashPassword = md5(password.value)
       const cryptr = new Cryptr(hashPassword, { saltLength: 10, pbkdf2Iterations: 10 })
 
@@ -122,7 +144,7 @@ export default {
 
     window.addEventListener('beforeunload', () => {
       if (_done) return
-      sendMessageToContent('SELECT_DECRYPTED_ACCOUNT', null)
+      sendMessageToContent(decrypted ? 'SELECT_DECRYPTED_ACCOUNT' : 'SELECT_ACCOUNT', null)
     })
 
     const accounts = computed(() => {
@@ -140,7 +162,8 @@ export default {
       passwordError,
       decryptAndSend,
       onlyPublic,
-      accounts
+      accounts,
+      decrypted
     }
   }
 }
