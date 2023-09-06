@@ -120,6 +120,7 @@ export default {
       type: Boolean,
       default: () => false
     }
+    /* TODO add networks support */
   },
   emits: { 'update:loading': (value: boolean) => true || value },
   setup(props, { emit }) {

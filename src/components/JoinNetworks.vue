@@ -13,10 +13,12 @@
     <v-select
       label="Networks to join"
       :items="networkItems"
+      :disabled="loadingLogs"
       :model-value="selectedNetworks"
       @update:model-value="
         ($event) => {
           selectedNetworks = $event
+          $router.push($route.path + `?networks=` + selectedNetworks.join(','))
           if (joinNetworksLogs) {
             joinNetworksLogs = undefined
           }
@@ -72,7 +74,7 @@
 
     <v-btn
       type="submit"
-      color="primary"
+      color="secondary"
       variant="tonal"
       block
       size="large"
@@ -91,6 +93,7 @@
 
 <script lang="ts">
 import { onMounted, ref, watch, computed, type PropType } from 'vue'
+import { useRoute } from 'vue-router'
 
 import { getNetwork, checkAndCreateTwin } from '@/utils'
 
@@ -118,13 +121,18 @@ export default {
     'update:model-value': (value: string[]) => true || value
   },
   setup(props, { emit }) {
+    const route = useRoute()
+
     const ShowTermsDialog = ref(false)
     const alreadyAcceptedTerms = ref(false)
     const selectedNetworks = ref<string[]>([])
     const joinedNetworks = ref(new Set<string>())
     const joinNetworksLogs = ref<NetworkLogs[]>()
 
-    onMounted(async () => (selectedNetworks.value = [await getNetwork()]))
+    onMounted(async () => {
+      const networks = ((route.query.networks as string) || '').split(',')
+      selectedNetworks.value = networks.length ? networks : [await getNetwork()]
+    })
 
     async function joinNetworks() {
       joinNetworksLogs.value = selectedNetworks.value.map((network) => {
@@ -182,13 +190,12 @@ export default {
       { immediate: true }
     )
 
-    watch(
-      joinNetworksLogs,
-      (logs) => {
-        emit('update:loading', logs?.some((item) => item.loading) || false)
-      },
-      { immediate: true }
-    )
+    const loadingLogs = computed(() => {
+      const logs = joinNetworksLogs.value
+      return logs?.some((item) => item.loading) || false
+    })
+
+    watch(loadingLogs, (loading) => emit('update:loading', loading), { immediate: true })
 
     return {
       ShowTermsDialog,
@@ -197,7 +204,8 @@ export default {
       joinNetworks,
       joinedNetworks,
       networkItems,
-      joinNetworksLogs
+      joinNetworksLogs,
+      loadingLogs
     }
   }
 }
