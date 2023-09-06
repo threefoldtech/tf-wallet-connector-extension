@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import md5 from 'md5'
 import Cryptr from 'cryptr'
 
-import { network, loadGrid, sendMessageToContent, storage } from '@/utils'
+import { loadGrid, storage } from '@/utils'
 import type { Account } from '@/types'
 
 export interface WalletStore {
@@ -73,7 +73,7 @@ export const useWalletStore = defineStore('wallet:store', {
         ssh: '',
         twinId: grid.twinId,
         address: grid.tfclient.address,
-        relay: grid.getDefaultUrls(network).relay.slice(6),
+        relay: grid.getDefaultUrls('dev' as any).relay.slice(6),
         networks: ['dev']
       }
       this.$state.accounts.push(account)

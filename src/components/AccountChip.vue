@@ -106,9 +106,9 @@
       <v-chip
         v-for="network in networks"
         :key="network"
-        color="secondary"
+        color="primary"
         size="small"
-        class="rounded mr-1 font-weight-bold"
+        class="rounded-sm mr-1 font-weight-bold"
       >
         <span class="text-capitalize">{{ network }}net</span>
       </v-chip>

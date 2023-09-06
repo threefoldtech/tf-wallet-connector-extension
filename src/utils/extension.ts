@@ -1,3 +1,5 @@
+import type { Network } from '@/types'
+
 let _tabId: number | undefined
 
 export function initTabId(tabId?: number) {
@@ -24,10 +26,32 @@ export async function sendMessageToContent(
   })
 }
 
+async function getTab() {
+  if (import.meta.env.DEV) {
+    return null
+  }
+
+  const tabs = await window.chrome.tabs.query({ currentWindow: true, active: true })
+  return tabs.at(0)
+}
+
 export async function getTabId() {
   if (_tabId) {
     return _tabId
   }
-  const tabs = await window.chrome.tabs.query({ currentWindow: true, active: true })
-  return tabs.at(0)!.id!
+  const tab = await getTab()
+  return tab?.id
+}
+
+export async function getNetwork(): Promise<Network> {
+  const tab = await getTab()
+  const url = tab?.url
+
+  if (url) {
+    if (url.includes('.dev.')) return 'dev'
+    if (url.includes('.test.')) return 'test'
+    if (url.includes('.qa.')) return 'qa'
+  }
+
+  return 'main'
 }
