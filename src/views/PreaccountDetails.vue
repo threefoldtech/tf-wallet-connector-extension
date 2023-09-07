@@ -88,7 +88,7 @@
 import { ref, computed, onMounted, type Ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
-import { loadGrid } from '@/utils'
+import { loadGrid, getBestNetwork, readSSH } from '@/utils'
 import type { Account } from '@/types'
 import { useWalletStore } from '@/stores'
 
@@ -97,14 +97,18 @@ export default {
   setup() {
     const route = useRoute()
     const mnemonic = route.params.mnemonic as string
+    const networks = (route.params.networks as string).split('-')
+
     const loading = ref(true)
     const fakeAccount = ref() as Ref<Account>
 
     onMounted(async () => {
-      const grid = await loadGrid(mnemonic)
+      const grid = await loadGrid(mnemonic, getBestNetwork(networks))
       fakeAccount.value = {
         mnemonic,
-        address: grid.tfclient.address
+        address: grid.tfclient.address,
+        networks,
+        ssh: await readSSH(grid)
       } as Account
       await grid.disconnect()
       loading.value = false
@@ -127,7 +131,13 @@ export default {
     const addingAccount = ref(false)
     async function addAccount() {
       addingAccount.value = true
-      // await walletStore.addAccount(name.value, mnemonic, password.value)
+      await walletStore.addAccount({
+        name: name.value,
+        mnemonic,
+        password: password.value,
+        networks,
+        ssh: fakeAccount.value.ssh
+      })
       addingAccount.value = false
       router.push('/')
     }

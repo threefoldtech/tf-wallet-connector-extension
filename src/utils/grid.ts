@@ -14,6 +14,13 @@ export async function loadGrid(
   return grid
 }
 
+export function getBestNetwork(networks: string[]): string {
+  if (networks.includes('main')) return 'main'
+  if (networks.includes('test')) return 'test'
+  if (networks.includes('qa')) return 'qa'
+  return 'dev'
+}
+
 export function createAccount(network: string = NetworkEnv.dev) {
   const grid = new GridClient({
     network: network as NetworkEnv,

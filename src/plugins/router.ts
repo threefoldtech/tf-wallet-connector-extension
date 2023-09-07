@@ -44,7 +44,7 @@ export const $router = createRouter({
       component: () => import('../views/ImportPreaccount.vue')
     },
     {
-      path: '/import-preaccount/:mnemonic',
+      path: '/import-preaccount/:mnemonic/:networks',
       component: () => import('../views/PreaccountDetails.vue')
     },
 

@@ -10,7 +10,7 @@
     "
   >
     <network-field
-      :disabled="loadingLogs"
+      :disabled="disabled || loadingLogs"
       :disabledNetworks="Array.from(joinedNetworks)"
       :model-value="selectedNetworks"
       @update:model-value="
@@ -58,6 +58,7 @@
       block
       size="large"
       :disabled="
+        disabled ||
         selectedNetworks.length === 0 ||
         selectedNetworks.every((network) => joinedNetworks.has(network)) ||
         joinNetworksLogs?.some((log) => log.loading)
@@ -101,7 +102,8 @@ export default {
     },
     loading: Boolean,
     valid: Boolean,
-    modelValue: Array as PropType<String[]>
+    modelValue: Array as PropType<String[]>,
+    disabled: { type: Boolean, default: () => false }
   },
   emits: {
     'update:loading': (loading: boolean) => true || loading,

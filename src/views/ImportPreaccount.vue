@@ -1,21 +1,19 @@
 <template>
-  <ext-layout :disable-actions="loading" remove-actions>
+  <ext-layout :disable-actions="networkLoading" remove-actions>
     <template #title>Import account</template>
 
-    <form @submit.prevent="$router.push('/import-preaccount/' + mnemonic)">
+    <form
+      @submit.prevent="$router.push('/import-preaccount/' + mnemonic + '/' + networks.join('-'))"
+    >
       <validate-field
         :value="mnemonic"
-        :rules="[
-          $validations.isRequired('Mnemonic is required.'),
-          $validations.isValidMnemonic,
-          $validations.isMnemonicHasTwin
-        ]"
+        :rules="[$validations.isRequired('Mnemonic is required.'), $validations.isValidMnemonic]"
         required
         v-model:error="mnemonicError"
         v-model="mnemonicValid"
         ref="mnemonicInput"
         #="{ validationProps }"
-        :disabled="loading"
+        :disabled="networkLoading"
       >
         <v-textarea
           label="Your account mnemonic"
@@ -24,42 +22,43 @@
           rows="2"
           v-model="mnemonic"
           v-bind="validationProps"
-          :disabled="loading"
+          :disabled="networkLoading"
         />
       </validate-field>
 
+      <join-networks
+        :disabled="!mnemonicValid"
+        :mnemonic="mnemonic"
+        v-model="networks"
+        v-model:valid="networkValid"
+        v-model:loading="networkLoading"
+      />
+
       <v-btn
-        type="button"
-        :disabled="
-          !mnemonicError.toLowerCase().includes('couldn\'t find a user for the provided mnemonic')
-        "
+        type="submit"
+        class="mt-4"
+        size="large"
+        :disabled="!mnemonicValid || !networkValid"
         variant="tonal"
         block
-        color="secondary"
-        class="mt-1 mb-2"
-        :loading="loading"
-        @click="ShowTermsDialog = true"
+        color="primary"
       >
-        Activate account
-      </v-btn>
-
-      <v-btn type="submit" :disabled="!mnemonicValid" variant="tonal" block color="primary">
         Next step
       </v-btn>
     </form>
   </ext-layout>
-
-  <terms-dialog v-model="ShowTermsDialog" @accept="activate()" v-if="ShowTermsDialog" />
 </template>
 
 <script lang="ts">
 import { ref } from 'vue'
 
 import { useValidateField } from '@/hooks'
-import { activateAccountAndCreateTwin } from '@/utils'
+
+import JoinNetworks from '@/components/JoinNetworks.vue'
 
 export default {
   name: 'ImportPreaccount',
+  components: { JoinNetworks },
   setup() {
     const mnemonic = ref('')
     const mnemonicValid = ref(false)
@@ -68,13 +67,9 @@ export default {
 
     const ShowTermsDialog = ref(false)
 
-    const loading = ref(false)
-    async function activate() {
-      loading.value = true
-      await activateAccountAndCreateTwin(mnemonic.value)
-      await mnemonicInput.value.validate()
-      loading.value = false
-    }
+    const networks = ref<string[]>([])
+    const networkValid = ref(false)
+    const networkLoading = ref(false)
 
     return {
       mnemonic,
@@ -82,10 +77,11 @@ export default {
       mnemonicError,
       mnemonicInput,
 
-      loading,
-      activate,
+      ShowTermsDialog,
 
-      ShowTermsDialog
+      networks,
+      networkValid,
+      networkLoading
     }
   }
 }
