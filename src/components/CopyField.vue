@@ -12,6 +12,13 @@
             theme: theme.current
           })
         "
+        :copyInputProps="{
+          'append-inner-icon': 'mdi-content-copy',
+          'onClick:append-inner': () => {
+            show = true
+            $copy(data)
+          }
+        }"
       ></slot>
     </template>
   </v-snackbar>

@@ -143,7 +143,7 @@ export default {
     const password = ref('')
     const passwordError = ref('')
     const askForPassword = ref(false)
-    const ssh = ref(props.account.ssh)
+    const ssh = ref(props.account.ssh || '')
 
     const generatingSSh = ref(false)
     async function generateSSH(mnemonic: string) {

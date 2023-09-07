@@ -4,7 +4,7 @@ export interface Account {
   name: string
   mnemonic: string
   address: string
-  ssh: string
+  ssh?: string
   visible: boolean
   networks: Network[]
 }
