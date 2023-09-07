@@ -5,6 +5,7 @@ import type TermsDialog from './components/TermsDialog.vue'
 import type ExtLayout from './components/Layout.vue'
 import type AccountChip from './components/AccountChip.vue'
 import type CopyField from './components/CopyField.vue'
+import type NetworkField from './components/NetworkField.vue'
 
 import type * as validations from './validations'
 
@@ -17,6 +18,7 @@ declare module '@vue/runtime-core' {
     ExtLayout: typeof ExtLayout
     AccountChip: typeof AccountChip
     CopyField: typeof CopyField
+    NetworkField: typeof NetworkField
   }
 
   export interface ComponentCustomProperties {

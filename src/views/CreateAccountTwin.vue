@@ -27,8 +27,9 @@
       block
       class="mt-4"
       :disabled="!networkValid || !done"
+      @click="next"
     >
-      Join select networks
+      Next step
     </v-btn>
   </ext-layout>
 </template>
@@ -50,14 +51,18 @@ export default {
     const networkLoading = ref(false)
     const networkValid = ref(false)
 
-    async function activateAccount() {
+    async function next() {
       const account = route.params as { name: string; mnemonic: string; password: string }
-      router.push(`/create-account-ssh/${account.mnemonic}/${account.name}/${account.password}`)
+      router.push(
+        `/create-account-ssh/${account.mnemonic}/${account.name}/${
+          account.password
+        }/${networks.value.join('-')}`
+      )
     }
 
     return {
       done,
-      activateAccount,
+      next,
       networks,
       networkLoading,
       networkValid,

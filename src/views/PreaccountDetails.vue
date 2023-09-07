@@ -127,7 +127,7 @@ export default {
     const addingAccount = ref(false)
     async function addAccount() {
       addingAccount.value = true
-      await walletStore.addAccount(name.value, mnemonic, password.value)
+      // await walletStore.addAccount(name.value, mnemonic, password.value)
       addingAccount.value = false
       router.push('/')
     }

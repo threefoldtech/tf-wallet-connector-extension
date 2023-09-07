@@ -9,6 +9,14 @@ export interface WalletStore {
   accounts: Account[]
 }
 
+interface AddAccount {
+  name: string
+  mnemonic: string
+  ssh: string
+  networks: string[]
+  password: string
+}
+
 export const useWalletStore = defineStore('wallet:store', {
   state(): WalletStore {
     return {
@@ -18,9 +26,7 @@ export const useWalletStore = defineStore('wallet:store', {
               name: 'test',
               address: 'test',
               mnemonic: 'test',
-              relay: 'test',
               ssh: 's',
-              twinId: 0,
               visible: true,
               networks: ['dev', 'qa', 'main']
             }
@@ -63,18 +69,16 @@ export const useWalletStore = defineStore('wallet:store', {
       return storage.setAccounts(this.$state.accounts)
     },
 
-    async addAccount(name: string, mnemonic: string, password: string) {
-      const grid = await loadGrid(mnemonic)
-      const cryptr = new Cryptr(md5(password), { saltLength: 10, pbkdf2Iterations: 10 })
+    async addAccount(options: AddAccount) {
+      const grid = await loadGrid(options.mnemonic)
+      const cryptr = new Cryptr(md5(options.password), { saltLength: 10, pbkdf2Iterations: 10 })
       const account: Account = {
-        name,
+        name: options.name,
         visible: true,
-        mnemonic: cryptr.encrypt(mnemonic),
-        ssh: '',
-        twinId: grid.twinId,
+        mnemonic: cryptr.encrypt(options.mnemonic),
+        ssh: options.ssh,
         address: grid.tfclient.address,
-        relay: grid.getDefaultUrls('dev' as any).relay.slice(6),
-        networks: ['dev']
+        networks: options.networks as any
       }
       this.$state.accounts.push(account)
       return storage.setAccounts(this.$state.accounts)

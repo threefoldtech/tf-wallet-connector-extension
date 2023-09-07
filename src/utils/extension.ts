@@ -19,11 +19,17 @@ export async function sendMessageToContent(
   const id = await getTabId()
   if (!id) return
 
-  return chrome.tabs.sendMessage(id, {
-    extension: window.$TF_WALLET_CONNECTOR_EXTENSION,
-    event,
-    data
-  })
+  return chrome.tabs
+    .sendMessage(id, {
+      extension: window.$TF_WALLET_CONNECTOR_EXTENSION,
+      event,
+      data
+    })
+    .catch((error) => {
+      /* Skip error */
+      console.log(error)
+      return
+    })
 }
 
 async function getTab() {

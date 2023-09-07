@@ -9,9 +9,24 @@
       inserting it.
     </v-alert>
 
-    <ssh-field no-password :account="fakeAccount" v-model:loading="sshLoading" />
+    <ssh-field
+      no-password
+      new-account
+      :account="fakeAccount"
+      :networks="networks"
+      v-model:loading="sshLoading"
+      v-model:public-ssh="fakeAccount.ssh"
+      :disabled="loading"
+    />
 
-    <v-btn variant="tonal" color="primary" block :disabled="sshLoading" @click="createAccount">
+    <v-btn
+      variant="tonal"
+      color="primary"
+      block
+      :disabled="sshLoading"
+      @click="createAccount"
+      :loading="loading"
+    >
       Create Account
     </v-btn>
   </ext-layout>
@@ -24,6 +39,7 @@ import SshField from '@/components/SshField.vue'
 import type { Account } from '@/types'
 import { ref } from 'vue'
 import { useWalletStore } from '@/stores'
+import { computed } from 'vue'
 
 export default {
   name: 'CreateAccountSSH',
@@ -32,24 +48,40 @@ export default {
     const route = useRoute()
     const router = useRouter()
     const walletStore = useWalletStore()
+    const loading = ref(false)
 
     const account = route.params as unknown as Account & { password: string }
+    const fakeAccount = ref({
+      ...account,
+      ssh: ''
+    })
 
     const sshLoading = ref(false)
 
+    const networks = computed(() => {
+      return (route.params.networks as string).split('-')
+    })
+
     async function createAccount() {
-      await walletStore.addAccount(account.name, account.mnemonic, account.password)
+      loading.value = true
+      await walletStore.addAccount({
+        name: account.name,
+        mnemonic: account.mnemonic,
+        ssh: fakeAccount.value.ssh,
+        networks: networks.value,
+        password: account.password
+      })
+      loading.value = false
       router.push('/')
     }
 
     return {
-      fakeAccount: {
-        ...account,
-        ssh: ''
-      },
+      fakeAccount,
 
       sshLoading,
-      createAccount
+      createAccount,
+      networks,
+      loading
     }
   }
 }

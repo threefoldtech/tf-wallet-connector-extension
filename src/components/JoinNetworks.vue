@@ -6,14 +6,12 @@
           return joinNetworks()
         }
         ShowTermsDialog = true
-        alreadyAcceptedTerms = true
       }
     "
   >
-    <v-select
-      label="Networks to join"
-      :items="networkItems"
+    <network-field
       :disabled="loadingLogs"
+      :disabledNetworks="Array.from(joinedNetworks)"
       :model-value="selectedNetworks"
       @update:model-value="
         ($event) => {
@@ -24,26 +22,7 @@
           }
         }
       "
-      multiple
-      :return-object="false"
-    >
-      <template #item="{ item, props }">
-        <v-list-item v-bind="props" class="py-2" :disabled="joinedNetworks.has(item.value)">
-          <template #prepend>
-            <v-checkbox-btn :model-value="selectedNetworks.includes(item.value)" />
-          </template>
-          <template #append v-if="joinedNetworks.has(item.value)">
-            <v-icon icon="mdi-check" color="green" />
-          </template>
-        </v-list-item>
-      </template>
-
-      <template #selection="{ item }">
-        <v-chip color="primary" size="small" class="rounded-sm mr-1 font-weight-bold">
-          {{ item.title }}
-        </v-chip>
-      </template>
-    </v-select>
+    />
 
     <v-list :lines="false" v-if="joinNetworksLogs?.length">
       <v-list-item v-for="networkLogs in joinNetworksLogs" :key="networkLogs.network">
@@ -88,7 +67,16 @@
     </v-btn>
   </form>
 
-  <terms-dialog v-model="ShowTermsDialog" @accept="joinNetworks()" v-if="ShowTermsDialog" />
+  <terms-dialog
+    v-model="ShowTermsDialog"
+    @accept="
+      () => {
+        alreadyAcceptedTerms = true
+        joinNetworks()
+      }
+    "
+    v-if="ShowTermsDialog"
+  />
 </template>
 
 <script lang="ts">
@@ -130,7 +118,9 @@ export default {
     const joinNetworksLogs = ref<NetworkLogs[]>()
 
     onMounted(async () => {
-      const networks = ((route.query.networks as string) || '').split(',')
+      const networks = ((route.query.networks as string)?.trim() || '')
+        .split(',')
+        .filter((x) => !!x)
       selectedNetworks.value = networks.length ? networks : [await getNetwork()]
     })
 
@@ -178,8 +168,6 @@ export default {
     watch(
       [selectedNetworks, joinedNetworks],
       ([selected, joined]) => {
-        console.log({ selected, joined })
-
         emit('update:model-value', selected)
         if (selected.length === 0) return emit('update:valid', false)
         emit(

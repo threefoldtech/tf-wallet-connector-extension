@@ -10,7 +10,7 @@
       label="Public SSH Key"
       v-model="ssh"
       no-resize
-      :disabled="disableSSH"
+      :disabled="disabled || disableSSH"
       spellcheck="false"
       v-bind="validationProps"
     />
@@ -21,7 +21,7 @@
       class="mr-2"
       variant="tonal"
       color="secondary"
-      :disabled="!!ssh"
+      :disabled="disabled || !!ssh"
       :loading="generatingSSh"
       @click="
         () => {
@@ -37,7 +37,7 @@
     <v-btn
       variant="tonal"
       color="primary"
-      :disabled="ssh === account.ssh || !ssh"
+      :disabled="disabled || ssh === account.ssh || !ssh"
       :loading="updatingSSH"
       @click="
         () => {
@@ -56,7 +56,7 @@
     <v-card>
       <v-card-title>Provide your account password</v-card-title>
       <v-card-text>
-        <form @submit.prevent="">
+        <form @submit.prevent>
           <validate-field
             :rules="[
               $validations.isRequired('Password is required.'),
@@ -119,10 +119,25 @@ export default {
     noPassword: {
       type: Boolean,
       default: () => false
+    },
+    newAccount: {
+      type: Boolean,
+      default: () => false
+    },
+    networks: {
+      type: Array as PropType<string[]>,
+      required: true
+    },
+    publicSsh: String,
+    disabled: {
+      type: Boolean,
+      default: () => false
     }
-    /* TODO add networks support */
   },
-  emits: { 'update:loading': (value: boolean) => true || value },
+  emits: {
+    'update:loading': (value: boolean) => true || value,
+    'update:public-ssh': (value: string) => true || value
+  },
   setup(props, { emit }) {
     const walletStore = useWalletStore()
     const password = ref('')
@@ -153,10 +168,16 @@ export default {
     }
 
     async function _updateSSH(mnemonic: string, newSsh: string) {
-      const grid = await loadGrid(mnemonic)
-      await storeSSH(grid, newSsh)
-      if (!props.noPassword) {
-        await walletStore.updateSSH(newSsh, props.account.mnemonic)
+      await Promise.all(
+        props.networks.map((network) =>
+          loadGrid(mnemonic, network).then((grid) => storeSSH(grid, newSsh))
+        )
+      )
+
+      emit('update:public-ssh', newSsh)
+
+      if (!props.newAccount) {
+        walletStore.updateSSH(newSsh, props.account.mnemonic)
       }
     }
 

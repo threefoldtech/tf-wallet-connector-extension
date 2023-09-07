@@ -72,3 +72,7 @@ export function readBackupFile(file: File): Promise<{ accounts: Account[]; encry
     fileReader.readAsText(file)
   })
 }
+
+export function capitalize(str: string): string {
+  return str[0].toUpperCase() + str.slice(1).toLowerCase()
+}

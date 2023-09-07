@@ -2,7 +2,7 @@
   <ext-layout>
     <account-chip :account="account" remove-actions />
 
-    <ssh-field :account="account" />
+    <!-- <ssh-field :account="account" /> -->
   </ext-layout>
 </template>
 
@@ -10,11 +10,11 @@
 import { useRoute } from 'vue-router'
 
 import { useWalletStore } from '@/stores'
-import SshField from '@/components/SshField.vue'
+// import SshField from '@/components/SshField.vue'
 
 export default {
   name: 'ManageAccount',
-  components: { SshField },
+  // components: { SshField },
   setup() {
     const walletStore = useWalletStore()
     const route = useRoute()
