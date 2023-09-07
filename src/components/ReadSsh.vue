@@ -58,11 +58,13 @@ export default {
     strict: { type: Boolean, default: () => false },
     modelValue: String,
     valid: Boolean,
-    disabled: { type: Boolean, default: () => false }
+    disabled: { type: Boolean, default: () => false },
+    ssh: String
   },
   emits: {
     'update:model-value': (network: string) => true || network,
-    'update:valid': (valid: boolean) => true || valid
+    'update:valid': (valid: boolean) => true || valid,
+    'update:ssh': (ssh: string) => true || ssh
   },
   setup(props, { emit }) {
     const theme = useVuetifyTheme()
@@ -76,6 +78,7 @@ export default {
       const grid = await loadGrid(props.account.mnemonic, networkToReadFrom.value)
       ssh.value = await readSSH(grid)
       await grid.disconnect()
+      emit('update:ssh', ssh.value)
       reading.value = false
     }
 

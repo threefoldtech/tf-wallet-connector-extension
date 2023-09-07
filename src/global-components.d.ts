@@ -6,6 +6,8 @@ import type ExtLayout from './components/Layout.vue'
 import type AccountChip from './components/AccountChip.vue'
 import type CopyField from './components/CopyField.vue'
 import type NetworkField from './components/NetworkField.vue'
+import type NetworkLog from './components/NetworkLog.vue'
+import type NetworkLogs from './components/NetworkLogs.vue'
 
 import type * as validations from './validations'
 
@@ -19,6 +21,8 @@ declare module '@vue/runtime-core' {
     AccountChip: typeof AccountChip
     CopyField: typeof CopyField
     NetworkField: typeof NetworkField
+    NetworkLog: typeof NetworkLog
+    NetworkLogs: typeof NetworkLogs
   }
 
   export interface ComponentCustomProperties {

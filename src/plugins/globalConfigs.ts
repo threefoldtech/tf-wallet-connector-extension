@@ -8,6 +8,8 @@ import ExtLayout from '@/components/Layout.vue'
 import AccountChip from '@/components/AccountChip.vue'
 import CopyField from '@/components/CopyField.vue'
 import NetworkField from '@/components/NetworkField.vue'
+import NetworkLog from '@/components/NetworkLog.vue'
+import NetworkLogs from '@/components/NetworkLogs.vue'
 
 import * as $validations from '@/validations'
 
@@ -27,7 +29,9 @@ export const $globalComponents = defineGlobalComponents({
   ExtLayout,
   AccountChip,
   CopyField,
-  NetworkField
+  NetworkField,
+  NetworkLog,
+  NetworkLogs
 })
 
 export function $globalProps(app: App<Element>) {

@@ -28,7 +28,7 @@ export const useWalletStore = defineStore('wallet:store', {
                 'rebuild eager divide effort three frown plate picnic hungry drink size van',
               ssh: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJheWbxEEvk8vPUcLU1sbKa1Kny8aqaN+7uQ/hxXI4ZM engm5081@gmail.com',
               address: '5EPdJRyju5DS1xhBWzo6JzLek8MnbcwUEQVLaPZRDLuMMhUv',
-              networks: ['qa', 'dev']
+              networks: ['qa', 'dev', 'test', 'main']
             }
           ]
         : []
