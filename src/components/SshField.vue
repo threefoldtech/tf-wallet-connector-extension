@@ -115,7 +115,6 @@ import { generateKeyPair } from 'web-ssh-keygen'
 import md5 from 'md5'
 import Cryptr from 'cryptr'
 
-import { useWalletStore } from '@/stores'
 import { loadGrid, storeSSH, downloadAsFile } from '@/utils'
 import type { PropType } from 'vue'
 import type { Account } from '@/types'
@@ -149,7 +148,6 @@ export default {
     'update:public-ssh': (value: string) => true || value
   },
   setup(props, { emit }) {
-    const walletStore = useWalletStore()
     const logsService = useLogsService()
     const password = ref('')
     const passwordError = ref('')
@@ -184,15 +182,6 @@ export default {
       return async (mnemonic: string, newSsh: string) => {
         return loadGrid(mnemonic, network).then((grid) => storeSSH(grid, newSsh))
       }
-      // await Promise.all(
-      //   props.networks.map((network) =>
-      //     loadGrid(mnemonic, network).then((grid) => storeSSH(grid, newSsh))
-      //   )
-      // )
-
-      // if (!props.newAccount) {
-      //   walletStore.updateSSH(newSsh, props.account.mnemonic)
-      // }
     }
 
     const disableSSH = computed(() => generatingSSh.value || updatingSSH.value)
