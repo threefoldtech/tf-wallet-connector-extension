@@ -16,6 +16,18 @@
     />
   </validate-field>
 
+  <network-logs
+    :networks="$props.networks"
+    :status="ssh && ssh === account.ssh ? 'success' : undefined"
+    force-update
+    pending-message="Pending to update public ssh key."
+    loading-message="Updating your public ssh key."
+    success-message="Public ssh key is up to date."
+    fail-message="Failed to update public ssh key."
+    :callback="updateSSHCallback"
+    ref="logsService"
+  />
+
   <div class="d-flex mb-6 mt-1">
     <v-btn
       class="mr-2"
@@ -108,6 +120,8 @@ import { loadGrid, storeSSH, downloadAsFile } from '@/utils'
 import type { PropType } from 'vue'
 import type { Account } from '@/types'
 
+import { useLogsService } from './NetworkLogs.vue'
+
 export default {
   name: 'SshField',
   props: {
@@ -117,10 +131,6 @@ export default {
     },
     loading: Boolean,
     noPassword: {
-      type: Boolean,
-      default: () => false
-    },
-    newAccount: {
       type: Boolean,
       default: () => false
     },
@@ -140,6 +150,7 @@ export default {
   },
   setup(props, { emit }) {
     const walletStore = useWalletStore()
+    const logsService = useLogsService()
     const password = ref('')
     const passwordError = ref('')
     const askForPassword = ref(false)
@@ -154,31 +165,34 @@ export default {
         name: 'Threefold',
         size: 4096
       })
-      await _updateSSH(mnemonic, keys.publicKey)
+      await logsService.value.trigger(mnemonic, keys.publicKey)
       ssh.value = keys.publicKey
       downloadAsFile('id_rsa', keys.privateKey)
+      emit('update:public-ssh', keys.publicKey)
       generatingSSh.value = false
     }
 
     const updatingSSH = ref(false)
     async function updateSSH(mnemonic: string) {
       updatingSSH.value = true
-      await _updateSSH(mnemonic, ssh.value)
+      await logsService.value.trigger(mnemonic, ssh.value)
+      emit('update:public-ssh', ssh.value)
       updatingSSH.value = false
     }
 
-    async function _updateSSH(mnemonic: string, newSsh: string) {
-      await Promise.all(
-        props.networks.map((network) =>
-          loadGrid(mnemonic, network).then((grid) => storeSSH(grid, newSsh))
-        )
-      )
-
-      emit('update:public-ssh', newSsh)
-
-      if (!props.newAccount) {
-        walletStore.updateSSH(newSsh, props.account.mnemonic)
+    function updateSSHCallback(network: string) {
+      return async (mnemonic: string, newSsh: string) => {
+        return loadGrid(mnemonic, network).then((grid) => storeSSH(grid, newSsh))
       }
+      // await Promise.all(
+      //   props.networks.map((network) =>
+      //     loadGrid(mnemonic, network).then((grid) => storeSSH(grid, newSsh))
+      //   )
+      // )
+
+      // if (!props.newAccount) {
+      //   walletStore.updateSSH(newSsh, props.account.mnemonic)
+      // }
     }
 
     const disableSSH = computed(() => generatingSSh.value || updatingSSH.value)
@@ -201,9 +215,11 @@ export default {
     }
 
     return {
+      logsService,
       ssh,
       password,
       checkPasswordAndContinue,
+      updateSSHCallback,
       askForPassword,
       passwordError,
       disableSSH,

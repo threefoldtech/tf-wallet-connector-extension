@@ -11,6 +11,8 @@
       :success-message="$props.successMessage"
       ref="logService"
       @success="successNetworks = [...successNetworks, $event]"
+      :force-status="$props.status"
+      :force-update="$props.forceUpdate"
     />
   </v-list>
 </template>
@@ -37,7 +39,9 @@ export default {
       type: Function as PropType<(network: string) => (...args: any[]) => Promise<unknown>>,
       required: true
     },
-    modelValue: Array as PropType<string[]>
+    modelValue: Array as PropType<string[]>,
+    status: String as PropType<'pending' | 'loading' | 'success' | 'fail'>,
+    forceUpdate: Boolean
   },
   emits: {
     'update:model-value': (networks: string[]) => true || networks

@@ -48,13 +48,16 @@ export default {
     callback: {
       type: Function as PropType<(...args: any[]) => Promise<unknown>>,
       required: true
-    }
+    },
+    forceStatus: String as PropType<'pending' | 'loading' | 'success' | 'fail'>,
+    forceUpdate: { type: Boolean, default: () => false }
   },
   emits: {
     success: (network: string) => true || network
   },
   setup(props, { expose, emit }) {
-    const status = ref<'pending' | 'loading' | 'success' | 'fail'>('pending')
+    const currentStatus = ref<'pending' | 'loading' | 'success' | 'fail'>('pending')
+    const status = computed(() => props.forceStatus || currentStatus.value)
 
     const message = computed(() => {
       if (status.value === 'loading') return props.loadingMessage
@@ -65,17 +68,17 @@ export default {
 
     expose({ trigger })
     async function trigger(...args: any[]) {
-      if (status.value === 'success') return
+      if (status.value === 'success' && !props.forceUpdate) return
 
-      status.value = 'loading'
+      currentStatus.value = 'loading'
 
       return props
         .callback(...args)
         .then(() => {
-          status.value = 'success'
+          currentStatus.value = 'success'
           emit('success', props.network)
         })
-        .catch(() => (status.value = 'fail'))
+        .catch(() => (currentStatus.value = 'fail'))
     }
 
     return { status, message }

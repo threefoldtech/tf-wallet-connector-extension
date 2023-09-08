@@ -83,6 +83,7 @@ export const useWalletStore = defineStore('wallet:store', {
       return storage.setAccounts(this.$state.accounts)
     },
 
+    /** @todo Remove this method */
     async updateSSH(ssh: string, mnemonic: string) {
       const index = this.findIndex(mnemonic)
       this.$state.accounts[index].ssh = ssh

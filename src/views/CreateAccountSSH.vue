@@ -11,7 +11,6 @@
 
     <ssh-field
       no-password
-      new-account
       :account="fakeAccount"
       :networks="networks"
       v-model:loading="sshLoading"
@@ -67,7 +66,6 @@ export default {
       await walletStore.addAccount({
         name: account.name,
         mnemonic: account.mnemonic,
-        ssh: fakeAccount.value.ssh,
         networks: networks.value,
         password: account.password
       })
