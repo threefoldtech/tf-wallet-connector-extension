@@ -26,15 +26,14 @@
     </v-tooltip>
   </div>
 
-  <copy-field :data="reading ? '' : ssh" #="{ copyInputProps }">
-    <!-- v-if="!strict || (strict && ssh && !reading)" -->
+  <copy-field :data="reading ? '' : sshKey" #="{ copyInputProps }">
     <v-textarea
-      :disabled="strict && (!ssh || reading)"
+      :disabled="strict && (!sshKey || reading)"
       class="mt-4"
       no-resize
       label="Public SSH Key"
       readonly
-      :model-value="reading ? '' : ssh"
+      :model-value="reading ? '' : sshKey"
       :loading="reading"
       v-bind="copyInputProps"
     />
@@ -71,14 +70,14 @@ export default {
     const networkToReadFrom = ref<string>(
       props.strict ? (undefined as any) : getBestNetwork(props.account.networks)
     )
-    const ssh = ref('')
+    const sshKey = ref('')
     const reading = ref(false)
     async function read() {
       reading.value = true
       const grid = await loadGrid(props.account.mnemonic, networkToReadFrom.value)
-      ssh.value = await readSSH(grid)
+      sshKey.value = await readSSH(grid)
       await grid.disconnect()
-      emit('update:ssh', ssh.value)
+      emit('update:ssh', sshKey.value)
       reading.value = false
     }
 
@@ -93,7 +92,7 @@ export default {
       })
     }
 
-    return { theme, networkToReadFrom, ssh, reading, read }
+    return { theme, networkToReadFrom, sshKey, reading, read }
   }
 }
 </script>

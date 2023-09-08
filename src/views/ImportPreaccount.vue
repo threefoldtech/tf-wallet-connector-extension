@@ -27,6 +27,8 @@
       </validate-field>
 
       <join-networks
+        :key="mnemonic"
+        check-only
         :disabled="!mnemonicValid"
         :mnemonic="mnemonic"
         v-model="networks"

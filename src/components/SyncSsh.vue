@@ -40,7 +40,11 @@
     color="primary"
     size="large"
     @click="sync"
-    :disabled="!networkValid || networks.length === 0"
+    :disabled="
+      !networkValid ||
+      networks.length === 0 ||
+      networks.every((network) => syncedNetworks.includes(network))
+    "
     block
     :loading="syncing"
   >

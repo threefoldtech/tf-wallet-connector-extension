@@ -25,8 +25,7 @@ export const useWalletStore = defineStore('wallet:store', {
               name: 'Rabie',
               visible: true,
               mnemonic:
-                'rebuild eager divide effort three frown plate picnic hungry drink size van',
-              ssh: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJheWbxEEvk8vPUcLU1sbKa1Kny8aqaN+7uQ/hxXI4ZM engm5081@gmail.com',
+                'aba3fa69120798f1a402d212cc2fe4f473fda3b90b24c4973a6e89870203b130ed36517d38701af9dedf128d1389fd6d7815103b83f40fc4c0e146ab4e01858d196f4562fe61896d68c6c511f09d6f0b2ee9f8710adfcd8cef82bbc605ea96a871e625e9aaba112ebf1bf0f99c3660c40f84654df8474ca4b3dd4428e17c',
               address: '5EPdJRyju5DS1xhBWzo6JzLek8MnbcwUEQVLaPZRDLuMMhUv',
               networks: ['qa', 'dev', 'test', 'main']
             }

@@ -135,8 +135,7 @@ export default {
         name: name.value,
         mnemonic,
         password: password.value,
-        networks,
-        ssh: fakeAccount.value.ssh
+        networks
       })
       addingAccount.value = false
       router.push('/')

@@ -71,14 +71,14 @@ export async function storeSSH(grid: GridClient, newSSH: string): Promise<void> 
   })
 }
 
-function joinedNetwork(mnemonic: string, network: string) {
+export function joinedNetwork(mnemonic: string, network: string) {
   async function _joinedNetwork(times: number): Promise<boolean> {
     try {
       const grid = await loadGrid(mnemonic, network)
       await grid.disconnect()
       return true
     } catch (error) {
-      console.log('[joinedNetwork]', error)
+      console.log('[joinedNetwork]', network, error)
 
       if (
         (error as Error).message

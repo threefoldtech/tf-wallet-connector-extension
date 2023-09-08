@@ -45,7 +45,7 @@ export default {
         account.name.toLowerCase() + '.json',
         JSON.stringify({
           encrypted: encryptedAccounts,
-          accounts: [{ name: account.name, address: account.address }],
+          accounts: [{ name: account.name, address: account.address, networks: account.networks }],
           meta: { version: VERSION, extension: window.$TF_WALLET_CONNECTOR_EXTENSION }
         })
       )

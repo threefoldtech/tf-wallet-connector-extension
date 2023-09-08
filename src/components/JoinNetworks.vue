@@ -2,7 +2,7 @@
   <form
     @submit.prevent="
       () => {
-        if (alreadyAcceptedTerms) {
+        if (alreadyAcceptedTerms || $props.checkOnly) {
           return joinNetworks()
         }
         ShowTermsDialog = true
@@ -21,14 +21,15 @@
       "
     />
 
+    <!-- prettier-ignore -->
     <network-logs
       :networks="selectedNetworks"
       :callback="joinNetwork"
       v-model="joinedNetworks"
-      pending-message="Pending to join network."
-      loading-message="Trying to join network..."
-      success-message="Successfully joined network."
-      fail-message="Failed to join network after 3 attempts."
+      :pending-message="$props.checkOnly ? 'Pending to check if the network is joined.' : 'Pending to join network.'"
+      :loading-message="$props.checkOnly ? 'Checking if the network is joined...' : 'Trying to join network...'"
+      :success-message="$props.checkOnly ? 'Network is already joined.' : 'Successfully joined network.'"
+      :fail-message="$props.checkOnly ? 'network is not yet joined.' : 'Failed to join network after 3 attempts.'"
       ref="logsService"
     />
 
@@ -45,7 +46,7 @@
         joining
       "
     >
-      Join select networks
+      {{ $props.checkOnly ? 'Check selected networks' : 'Join selected networks' }}
     </v-btn>
   </form>
 
@@ -65,7 +66,7 @@
 import { onMounted, ref, watch, computed, type PropType } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { getNetwork, checkAndCreateTwin } from '@/utils'
+import { getNetwork, checkAndCreateTwin, joinedNetwork } from '@/utils'
 
 import { useLogsService } from './NetworkLogs.vue'
 
@@ -79,7 +80,8 @@ export default {
     loading: Boolean,
     valid: Boolean,
     modelValue: Array as PropType<String[]>,
-    disabled: { type: Boolean, default: () => false }
+    disabled: { type: Boolean, default: () => false },
+    checkOnly: { type: Boolean, default: () => false }
   },
   emits: {
     'update:loading': (loading: boolean) => true || loading,
@@ -103,11 +105,16 @@ export default {
     })
 
     function joinNetwork(network: string) {
-      return () =>
-        checkAndCreateTwin(props.mnemonic, network).then((res) => {
-          if (res) return
-          throw new Error()
+      return () => {
+        if (props.checkOnly) {
+          return joinedNetwork(props.mnemonic, network).then((res) => {
+            if (!res) throw new Error()
+          })
+        }
+        return checkAndCreateTwin(props.mnemonic, network).then((res) => {
+          if (!res) throw new Error()
         })
+      }
     }
 
     const networkItems = computed(() => {
