@@ -42,7 +42,7 @@ export default {
   emits: {
     'update:model-value': (networks: string[]) => true || networks
   },
-  setup(props, { expose, emit }) {
+  setup(_, { expose, emit }) {
     const logService = useLogService()
 
     expose({ trigger })
@@ -52,7 +52,6 @@ export default {
 
     const successNetworks = ref<string[]>([])
     watch(successNetworks, (networks) => {
-      console.log({ networks })
       emit('update:model-value', networks)
     })
 
