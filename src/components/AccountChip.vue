@@ -100,17 +100,24 @@
         </v-menu>
       </div>
     </v-card-text>
+
     <v-divider />
 
     <v-card-item>
       <v-chip
         v-for="network in networks"
         :key="network"
-        color="primary"
+        :color="isActiveNetwork(network) ? 'primary' : undefined"
         size="small"
         class="rounded-sm mr-1 font-weight-bold"
       >
-        <span class="text-capitalize">{{ network }}net</span>
+        <span
+          class="text-capitalize"
+          :class="{
+            'text-decoration-line-through': !isActiveNetwork(network)
+          }"
+          >{{ network }}net</span
+        >
       </v-chip>
     </v-card-item>
   </v-card>
@@ -131,7 +138,8 @@ export default {
       required: true,
       type: Object as PropType<Account>
     },
-    removeActions: Boolean
+    removeActions: Boolean,
+    selectedNetworks: { type: [Array, null] as PropType<string[] | null>, required: false }
   },
   setup(props) {
     const showCopyNotification = ref(false)
@@ -152,8 +160,22 @@ export default {
 
     const networks = computed(() => {
       const networkSet = new Set<string>(props.account.networks)
-      return ['main', 'test', 'qa', 'dev'].filter((network) => networkSet.has(network))
+      const nws = ['main', 'test', 'qa', 'dev'].filter((network) => networkSet.has(network))
+
+      const selectedNetworks = props.selectedNetworks
+      if (selectedNetworks) {
+        nws.sort((a, b) => {
+          const x = selectedNetworks.includes(a) ? 1 : 0
+          const y = selectedNetworks.includes(b) ? 1 : 0
+          return y - x
+        })
+      }
+      return nws
     })
+
+    function isActiveNetwork(network: string): boolean {
+      return props.selectedNetworks?.includes(network) ?? true
+    }
 
     return {
       showCopyNotification,
@@ -163,7 +185,8 @@ export default {
       name,
       enableRename,
       renameAccount,
-      networks
+      networks,
+      isActiveNetwork
     }
   }
 }

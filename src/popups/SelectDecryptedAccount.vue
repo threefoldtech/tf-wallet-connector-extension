@@ -28,7 +28,7 @@
           "
           class="pt-4"
         >
-          <account-chip :account="account" remove-actions />
+          <account-chip :account="account" :selected-networks="selectedNetworks" remove-actions />
         </v-list-item>
         <v-divider />
       </template>
@@ -98,7 +98,7 @@
 <script lang="ts">
 import { useWalletStore } from '@/stores'
 import type { Account } from '@/types'
-import { sendMessageToContent } from '@/utils'
+import { loadPublicAccount, sendMessageToContent } from '@/utils'
 import { ref } from 'vue'
 import md5 from 'md5'
 import Cryptr from 'cryptr'
@@ -116,13 +116,24 @@ export default {
     const onlyPublic = ref(true)
     const route = useRoute()
 
+    const selectedNetworks = route.params.networks === 'none' ? null : (route.params.networks as string).split('-') // prettier-ignore
     const decrypted = route.query.decrypted !== 'false'
 
     let _done = false
     async function decryptAndSend() {
       if (!decrypted) {
-        await sendMessageToContent('SELECT_ACCOUNT', selectedAccount.value)
+        await sendMessageToContent(
+          'SELECT_ACCOUNT',
+          await loadPublicAccount({
+            name: selectedAccount.value!.name,
+            address: selectedAccount.value!.address,
+            encryptedMnemonic: true,
+            mnemonic: selectedAccount.value!.mnemonic,
+            networks: selectedNetworks ? selectedNetworks : selectedAccount.value!.networks
+          })
+        )
         _done = true
+        window.onbeforeunload = null
         window.close()
       }
 
@@ -131,11 +142,19 @@ export default {
 
       try {
         const mnemonic = cryptr.decrypt(selectedAccount.value!.mnemonic)
-        await sendMessageToContent('SELECT_DECRYPTED_ACCOUNT', {
-          ...selectedAccount.value,
-          mnemonic
-        })
+
+        await sendMessageToContent(
+          'SELECT_DECRYPTED_ACCOUNT',
+          await loadPublicAccount({
+            name: selectedAccount.value!.name,
+            address: selectedAccount.value!.address,
+            encryptedMnemonic: false,
+            mnemonic,
+            networks: selectedNetworks ? selectedNetworks : selectedAccount.value!.networks
+          })
+        )
         _done = true
+        window.onbeforeunload = null
         window.close()
       } catch {
         passwordError.value = "Password you provided isn't valid"
@@ -148,10 +167,19 @@ export default {
     })
 
     const accounts = computed(() => {
+      let accounts = walletStore.accounts
+
       if (onlyPublic.value) {
-        return walletStore.accounts.filter((account) => account.visible)
+        accounts = accounts.filter((account) => account.visible)
       }
-      return walletStore.accounts
+
+      if (selectedNetworks) {
+        accounts = accounts.filter((account) =>
+          account.networks.some((network) => selectedNetworks.includes(network))
+        )
+      }
+
+      return accounts
     })
 
     return {
@@ -163,7 +191,8 @@ export default {
       decryptAndSend,
       onlyPublic,
       accounts,
-      decrypted
+      decrypted,
+      selectedNetworks
     }
   }
 }

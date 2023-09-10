@@ -115,11 +115,12 @@
     sendResponse('ok')
   })
 
-  handler.on('SELECT_DECRYPTED_ACCOUNT', async ({ sender, sendResponse }) => {
+  handler.on('SELECT_DECRYPTED_ACCOUNT', async ({ message, sender, sendResponse }) => {
     await chrome.windows.create({
       url:
         chrome.runtime.getURL('index.html') +
-        '#/select-decrypted-account' +
+        '#/select-decrypted-account/' +
+        (message ? message.join('-') : 'none') +
         '?url=' +
         sender.origin +
         '&tabId=' +
@@ -134,11 +135,12 @@
     sendResponse('ok')
   })
 
-  handler.on('SELECT_ACCOUNT', async ({ sender, sendResponse }) => {
+  handler.on('SELECT_ACCOUNT', async ({ message, sender, sendResponse }) => {
     await chrome.windows.create({
       url:
         chrome.runtime.getURL('index.html') +
-        '#/select-decrypted-account' +
+        '#/select-decrypted-account/' +
+        (message ? message.join('-') : 'none') +
         '?url=' +
         sender.origin +
         '&tabId=' +

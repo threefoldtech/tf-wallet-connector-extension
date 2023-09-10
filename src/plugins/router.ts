@@ -65,7 +65,7 @@ export const $router = createRouter({
       component: () => import('../popups/RequestDecryptedAccount.vue')
     },
     {
-      path: '/select-decrypted-account',
+      path: '/select-decrypted-account/:networks',
       component: () => import('../popups/SelectDecryptedAccount.vue')
     }
   ]

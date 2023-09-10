@@ -6,6 +6,7 @@
   /** @typedef { import("./types").HandlerCtx } HandlerCtx */
   /** @typedef { import("./types").Commands } Commands */
   /** @typedef { import("./types").Account }  Account */
+  /** @typedef { import('./types').PublicAccount } PublicAccount */
 
   const AUTH_LIST = window.$TF_WALLET_CONNECTOR_EXTENSION + '_AUTH_LIST'
   const ACCOUNTS = window.$TF_WALLET_CONNECTOR_EXTENSION + '_ACCOUNTS'
@@ -23,11 +24,22 @@
       window.addEventListener('message', this._injectMessageHandler.bind(this))
     }
 
-    /** @returns { Promise<Account[]> } */
+    /** @returns { Promise<PublicAccount[]> } */
     async getPublicAccounts() {
       const storage = await chrome.storage.sync.get(ACCOUNTS)
       /** @type {Account[]} */ const accounts = JSON.parse(storage[ACCOUNTS] || '[]')
-      return accounts.filter((account) => account.visible)
+      return accounts
+        .filter((account) => account.visible)
+        .map((account) => {
+          return {
+            name: account.name,
+            address: account.address,
+            metadata: {},
+            networks: account.networks,
+            encryptedMnemonic: true,
+            mnemonic: account.mnemonic
+          }
+        })
     }
 
     notifyAccountsToInject() {
@@ -234,7 +246,9 @@
     handler.sendMessageToInject('GET_AUTH_LIST', await handler.getAuthList())
   })
 
-  handler.onInject('SELECT_ACCOUNT', () => handler.sendMesssageToBackground('SELECT_ACCOUNT'))
+  handler.onInject('SELECT_ACCOUNT', (message) => {
+    handler.sendMesssageToBackground('SELECT_ACCOUNT', message)
+  })
 
   handler.onInject('LISTEN_PUBLIC_ACCOUNTS', async () => {
     handler.notifyAccountsToInject()
@@ -250,7 +264,7 @@
   handler.onInject('REQUEST_DECRYPTED_ACCOUNT', (message) => {
     handler.sendMesssageToBackground('REQUEST_DECRYPTED_ACCOUNT', message)
   })
-  handler.onInject('SELECT_DECRYPTED_ACCOUNT', () =>
-    handler.sendMesssageToBackground('SELECT_DECRYPTED_ACCOUNT')
+  handler.onInject('SELECT_DECRYPTED_ACCOUNT', (message) =>
+    handler.sendMesssageToBackground('SELECT_DECRYPTED_ACCOUNT', message)
   )
 }

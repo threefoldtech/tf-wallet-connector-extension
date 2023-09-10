@@ -19,7 +19,14 @@ export interface Account {
   mnemonic: string
   twinId: number
   address: string
-  ssh: string
-  relay: string
   visible: boolean
+  networks: string[]
+}
+export interface PublicAccount {
+  name: string
+  mnemonic: string
+  encryptedMnemonic: boolean
+  address: string
+  networks: string[]
+  metadata: { [network: string]: { twinId: number | null; ssh: string | null } }
 }

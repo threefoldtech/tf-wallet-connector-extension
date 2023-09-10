@@ -129,7 +129,7 @@ export interface LoadPublicAccountOptions {
   name: string
   address: string
   mnemonic: string
-  networks: Network[]
+  networks: string[]
   encryptedMnemonic: boolean
 }
 export async function loadPublicAccount(options: LoadPublicAccountOptions): Promise<PublicAccount> {
@@ -154,7 +154,7 @@ export async function loadPublicAccount(options: LoadPublicAccountOptions): Prom
     )
 
     return options.networks.reduce((res, network, index) => {
-      res[network] = networksMetadata[index]
+      res[network as Network] = networksMetadata[index]
       return res
     }, metadata)
   }
@@ -164,7 +164,7 @@ export async function loadPublicAccount(options: LoadPublicAccountOptions): Prom
     address: options.address,
     mnemonic: options.mnemonic,
     encryptedMnemonic: options.encryptedMnemonic,
-    networks: options.networks,
+    networks: options.networks as Network[],
     // metadata: {}
     metadata: await _loadAccountMetadata()
   }
