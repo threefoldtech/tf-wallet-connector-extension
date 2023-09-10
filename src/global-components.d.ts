@@ -48,6 +48,11 @@ interface TF_WALLET_CONNECTOR_EXTENSION_CMDS {
   SIGN: 'SIGN'
 }
 
+export interface SignReturn {
+  publicKey: string
+  signature: string
+}
+
 declare global {
   interface Window {
     $TF_WALLET_CONNECTOR_EXTENSION: 'TF_WALLET_CONNECTOR_EXTENSION'
