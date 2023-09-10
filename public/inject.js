@@ -66,13 +66,19 @@
       }
     }
 
-    /** @param { string } mnemonic  */
-    async requestDecryptedAccount(mnemonic) {
+    /**
+     * @param { string } mnemonic
+     * @param { string | string[] } [networks]
+     */
+    async requestDecryptedAccount(mnemonic, networks) {
       await this._hasAccessGuard()
 
       return new Promise((res) => {
         this.once('REQUEST_DECRYPTED_ACCOUNT', res)
-        this.sendMessageToContent('REQUEST_DECRYPTED_ACCOUNT', mnemonic)
+        this.sendMessageToContent('REQUEST_DECRYPTED_ACCOUNT', {
+          mnemonic,
+          networks: this._normalizeNetworks(networks)
+        })
       })
     }
 
@@ -92,13 +98,25 @@
       })
     }
 
-    /** @returns { Promise<Account[]> } */
-    async getPublicAccounts() {
+    /**
+     * @param { string | string[] } [networks]
+     * @returns { null | string[] }
+     */
+    _normalizeNetworks(networks) {
+      if (typeof networks === 'string') return [networks]
+      if (Array.isArray(networks) && networks.length > 0) return networks
+      return null
+    }
+
+    /**
+     * @param { string | string[] } [networks]
+     * @returns { Promise<Account[]> } */
+    async getPublicAccounts(networks) {
       await this._hasAccessGuard()
 
       return new Promise((res) => {
         this.once('GET_PUBLIC_ACCOUNTS', res)
-        this.sendMessageToContent('GET_PUBLIC_ACCOUNTS')
+        this.sendMessageToContent('GET_PUBLIC_ACCOUNTS', this._normalizeNetworks(networks))
       })
     }
 
@@ -112,22 +130,26 @@
       })
     }
 
-    /** @returns { Promise<Account | null> } */
-    async selectAccount() {
+    /**
+     * @param { string | string[] } [networks]
+     * @returns { Promise<Account | null> } */
+    async selectAccount(networks) {
       await this._hasAccessGuard()
 
       return new Promise((res) => {
         this.once('SELECT_ACCOUNT', res)
-        this.sendMessageToContent('SELECT_ACCOUNT')
+        this.sendMessageToContent('SELECT_ACCOUNT', this._normalizeNetworks(networks))
       })
     }
 
-    /** @returns { Promise<Account | null> } */
-    async selectDecryptedAccount() {
+    /**
+     * @param { string | string[] } [networks]
+     * @returns { Promise<Account | null> } */
+    async selectDecryptedAccount(networks) {
       await this._hasAccessGuard()
       return new Promise((res) => {
         this.once('SELECT_DECRYPTED_ACCOUNT', res)
-        this.sendMessageToContent('SELECT_DECRYPTED_ACCOUNT')
+        this.sendMessageToContent('SELECT_DECRYPTED_ACCOUNT', this._normalizeNetworks(networks))
       })
     }
 

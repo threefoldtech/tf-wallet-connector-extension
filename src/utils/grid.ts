@@ -1,17 +1,24 @@
+import type { Network, PublicAccount } from '@/types'
 import { BackendStorageType, GridClient, NetworkEnv } from '@threefold/grid_client'
 
 export async function loadGrid(
   mnemonic: string,
-  network: string = NetworkEnv.dev
+  network: string = NetworkEnv.dev,
+  times?: number
 ): Promise<GridClient> {
-  const grid = new GridClient({
-    mnemonic,
-    network: network as NetworkEnv,
-    storeSecret: mnemonic,
-    backendStorageType: BackendStorageType.tfkvstore
-  })
-  await grid.connect()
-  return grid
+  try {
+    const grid = new GridClient({
+      mnemonic,
+      network: network as NetworkEnv,
+      storeSecret: mnemonic,
+      backendStorageType: BackendStorageType.tfkvstore
+    })
+    await grid.connect()
+    return grid
+  } catch (error) {
+    if (!times || times <= 0) throw error
+    return loadGrid(mnemonic, network, times)
+  }
 }
 
 export function getBestNetwork(networks: string[]): string {
@@ -116,4 +123,49 @@ export async function checkAndCreateTwin(mnemonic: string, network: string): Pro
   }
 
   return joinNetwork(mnemonic, network)
+}
+
+export interface LoadPublicAccountOptions {
+  name: string
+  address: string
+  mnemonic: string
+  networks: Network[]
+  encryptedMnemonic: boolean
+}
+export async function loadPublicAccount(options: LoadPublicAccountOptions): Promise<PublicAccount> {
+  async function _loadAccountMetadata(): Promise<PublicAccount['metadata']> {
+    const metadata: PublicAccount['metadata'] = {}
+
+    if (options.encryptedMnemonic) {
+      return metadata
+    }
+
+    const networksMetadata = await Promise.all(
+      options.networks.map(async (network) => {
+        const grid = await loadGrid(options.mnemonic, network, 3).catch((error) => {
+          console.log(error)
+          return null
+        })
+        if (!grid) return { twinId: null, ssh: null }
+        const metadata = { twinId: grid.twinId, ssh: await readSSH(grid).catch(() => null) }
+        await grid.disconnect()
+        return metadata
+      })
+    )
+
+    return options.networks.reduce((res, network, index) => {
+      res[network] = networksMetadata[index]
+      return res
+    }, metadata)
+  }
+
+  return {
+    name: options.name,
+    address: options.address,
+    mnemonic: options.mnemonic,
+    encryptedMnemonic: options.encryptedMnemonic,
+    networks: options.networks,
+    // metadata: {}
+    metadata: await _loadAccountMetadata()
+  }
 }

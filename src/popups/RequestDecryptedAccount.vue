@@ -9,6 +9,7 @@
         type="password"
         :model-value="password"
         autofocus
+        :disabled="loading"
         @update:model-value="
           ($event) => {
             password = $event
@@ -23,7 +24,9 @@
         {{ mnemonicError }}
       </v-alert>
 
-      <v-btn type="submit" variant="tonal" block color="error" class="mt-1"> Give Access </v-btn>
+      <v-btn type="submit" :loading="loading" variant="tonal" block color="error" class="mt-1">
+        Give Access
+      </v-btn>
     </form>
   </ext-layout>
 </template>
@@ -33,7 +36,7 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import md5 from 'md5'
 import Cryptr from 'cryptr'
-import { sendMessageToContent } from '@/utils'
+import { sendMessageToContent, loadPublicAccount } from '@/utils'
 import { useWalletStore } from '@/stores'
 
 export default {
@@ -43,23 +46,41 @@ export default {
     const route = useRoute()
     const password = ref('')
     const mnemonicError = ref('')
+    const loading = ref(false)
+
+    const encryptedMnemonic = route.params.mnemonic as string
+    const selectedNetworks = route.params.networks === 'none' ? null : (route.params.networks as string).split('-') // prettier-ignore
+    const selectedAccount = walletStore.findAccount(encryptedMnemonic)
 
     let _done = false
     async function giveAccess() {
+      loading.value = true
       const hashPassword = md5(password.value)
       const cryptr = new Cryptr(hashPassword, { pbkdf2Iterations: 10, saltLength: 10 })
 
       try {
-        const mnemonic = cryptr.decrypt(route.params.mnemonic as string)
+        const mnemonic = cryptr.decrypt(encryptedMnemonic)
 
-        await sendMessageToContent('REQUEST_DECRYPTED_ACCOUNT', {
-          ...walletStore.findAccount(route.params.mnemonic as string),
-          mnemonic
-        })
+        const networks = selectedNetworks
+          ? selectedAccount.networks.filter((network) => selectedNetworks.includes(network))
+          : selectedAccount.networks
+
+        await sendMessageToContent(
+          'REQUEST_DECRYPTED_ACCOUNT',
+          await loadPublicAccount({
+            name: selectedAccount.name,
+            address: selectedAccount.address,
+            encryptedMnemonic: false,
+            mnemonic,
+            networks
+          })
+        )
         _done = true
+        window.onbeforeunload = null
         window.close()
       } catch {
         mnemonicError.value = 'Please provide a valid password.'
+        loading.value = false
       }
     }
 
@@ -68,7 +89,7 @@ export default {
       await sendMessageToContent('REQUEST_DECRYPTED_ACCOUNT', null)
     })
 
-    return { password, giveAccess, mnemonicError }
+    return { password, giveAccess, mnemonicError, loading }
   }
 }
 </script>

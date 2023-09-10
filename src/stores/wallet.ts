@@ -9,7 +9,7 @@ export interface WalletStore {
   accounts: Account[]
 }
 
-interface AddAccount {
+export interface AddAccount {
   name: string
   mnemonic: string
   networks: string[]

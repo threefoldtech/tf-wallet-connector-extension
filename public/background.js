@@ -1,6 +1,6 @@
-{
-  // @ts-check
+// @ts-check
 
+{
   /** @typedef { import("./types").Message } Message */
   /** @typedef { import("./types").HandlerCtx } HandlerCtx */
   /** @typedef { import("./types").Commands } Commands */
@@ -80,7 +80,7 @@
         '#/request-access?url=' +
         sender.origin +
         '&tabId=' +
-        sender.tab.id,
+        (sender.tab || {}).id,
       height: 600,
       width: 535,
       top: 50,
@@ -92,15 +92,19 @@
   })
 
   handler.on('REQUEST_DECRYPTED_ACCOUNT', async ({ message, sender, sendResponse }) => {
+    /** @type {{ mnemonic: string, networks?: string[] }} */ const msg = message
+    const { mnemonic, networks } = msg
     await chrome.windows.create({
       url:
         chrome.runtime.getURL('index.html') +
         '#/request-decrypted-account/' +
-        message +
+        mnemonic +
+        '/' +
+        (networks ? networks.join('-') : 'none') +
         '?url=' +
         sender.origin +
         '&tabId=' +
-        sender.tab.id,
+        (sender.tab || {}).id,
       height: 600,
       width: 535,
       top: 50,
@@ -119,7 +123,7 @@
         '?url=' +
         sender.origin +
         '&tabId=' +
-        sender.tab.id,
+        (sender.tab || {}).id,
       height: 600,
       width: 535,
       top: 50,
@@ -138,7 +142,7 @@
         '?url=' +
         sender.origin +
         '&tabId=' +
-        sender.tab.id +
+        (sender.tab || {}).id +
         '&decrypted=false',
       height: 600,
       width: 535,
