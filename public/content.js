@@ -24,22 +24,30 @@
       window.addEventListener('message', this._injectMessageHandler.bind(this))
     }
 
-    /** @returns { Promise<PublicAccount[]> } */
-    async getPublicAccounts() {
+    /**
+     * @param { string[] } [networks]
+     * @returns { Promise<PublicAccount[]> } */
+    async getPublicAccounts(networks) {
       const storage = await chrome.storage.sync.get(ACCOUNTS)
-      /** @type {Account[]} */ const accounts = JSON.parse(storage[ACCOUNTS] || '[]')
-      return accounts
-        .filter((account) => account.visible)
-        .map((account) => {
-          return {
-            name: account.name,
-            address: account.address,
-            metadata: {},
-            networks: account.networks,
-            encryptedMnemonic: true,
-            mnemonic: account.mnemonic
-          }
+      /** @type {Account[]} */ let accounts = JSON.parse(storage[ACCOUNTS] || '[]')
+      accounts = accounts.filter((account) => account.visible)
+
+      if (networks) {
+        accounts = accounts.filter((account) => {
+          return account.networks.some((network) => networks.includes(network))
         })
+      }
+
+      return accounts.map((account) => {
+        return {
+          name: account.name,
+          address: account.address,
+          metadata: {},
+          networks: account.networks,
+          encryptedMnemonic: true,
+          mnemonic: account.mnemonic
+        }
+      })
     }
 
     notifyAccountsToInject() {
@@ -238,8 +246,8 @@
     handler.sendMesssageToBackground('REQUEST_ACCESS')
   })
 
-  handler.onInject('GET_PUBLIC_ACCOUNTS', async () => {
-    handler.sendMessageToInject('GET_PUBLIC_ACCOUNTS', await handler.getPublicAccounts())
+  handler.onInject('GET_PUBLIC_ACCOUNTS', async (message) => {
+    handler.sendMessageToInject('GET_PUBLIC_ACCOUNTS', await handler.getPublicAccounts(message))
   })
 
   handler.onInject('GET_AUTH_LIST', async () => {
