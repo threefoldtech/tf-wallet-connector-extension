@@ -38,15 +38,17 @@ export default {
 
     async function accept() {
       accepting.value = true
-      await storage.setAuthList(await getNewAuthList(true))
       await sendMessageToContent('RESPONSE_ACCESS', true)
+      await storage.setAuthList(await getNewAuthList(true))
       window.close()
     }
 
     window.addEventListener('beforeunload', async () => {
       if (accepting.value) return
-      await storage.setAuthList(await getNewAuthList(false))
-      await sendMessageToContent('RESPONSE_ACCESS', false)
+      await Promise.all([
+        sendMessageToContent('RESPONSE_ACCESS', false),
+        storage.setAuthList(await getNewAuthList(false))
+      ])
     })
 
     return { accept, accepting, denying }
