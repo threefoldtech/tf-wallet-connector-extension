@@ -74,6 +74,7 @@
                       }
                     }
                   "
+                  :disabled="loading"
                   v-bind="$combineProps(validationProps, passwordFieldProps)"
                 />
               </validate-field>
@@ -84,7 +85,13 @@
             </v-alert>
 
             <div class="d-flex justify-center">
-              <v-btn color="error" variant="tonal" type="submit" :disabled="!passwordValid">
+              <v-btn
+                color="error"
+                variant="tonal"
+                :loading="loading"
+                type="submit"
+                :disabled="!passwordValid"
+              >
                 Submit
               </v-btn>
             </div>
@@ -119,8 +126,9 @@ export default {
     const selectedNetworks = route.params.networks === 'none' ? null : (route.params.networks as string).split('-') // prettier-ignore
     const decrypted = route.query.decrypted !== 'false'
 
-    let _done = false
+    const loading = ref(false)
     async function decryptAndSend() {
+      loading.value = true
       if (!decrypted) {
         await sendMessageToContent(
           'SELECT_ACCOUNT',
@@ -132,7 +140,6 @@ export default {
             networks: selectedNetworks ? selectedNetworks : selectedAccount.value!.networks
           })
         )
-        _done = true
         window.onbeforeunload = null
         window.close()
       }
@@ -153,16 +160,16 @@ export default {
             networks: selectedNetworks ? selectedNetworks : selectedAccount.value!.networks
           })
         )
-        _done = true
         window.onbeforeunload = null
         window.close()
       } catch {
+        loading.value = false
         passwordError.value = "Password you provided isn't valid"
       }
     }
 
     window.addEventListener('beforeunload', () => {
-      if (_done) return
+      if (loading.value) return
       sendMessageToContent(decrypted ? 'SELECT_DECRYPTED_ACCOUNT' : 'SELECT_ACCOUNT', null)
     })
 
@@ -192,7 +199,8 @@ export default {
       onlyPublic,
       accounts,
       decrypted,
-      selectedNetworks
+      selectedNetworks,
+      loading
     }
   }
 }
