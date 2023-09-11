@@ -4,6 +4,7 @@
   /** @typedef { import("./types").Message } Message */
   /** @typedef { import("./types").HandlerCtx } HandlerCtx */
   /** @typedef { import("./types").Commands } Commands */
+  /** @typedef { import('../src/utils/sign').SignOptions } SignOptions */
 
   class BackgroundHandler {
     /** @type { {[key: string]: (ctx: HandlerCtx) => void } } */ _handlers = {}
@@ -146,6 +147,32 @@
         '&tabId=' +
         (sender.tab || {}).id +
         '&decrypted=false',
+      height: 600,
+      width: 535,
+      top: 50,
+      left: 50,
+      focused: true,
+      type: 'popup'
+    })
+    sendResponse('ok')
+  })
+
+  handler.on('SIGN_TRANSACTION', async ({ message, sendResponse, sender }) => {
+    /** @type { SignOptions } */ const msg = message
+    const { content, keypairType, mnemonic } = msg
+    await chrome.windows.create({
+      url:
+        chrome.runtime.getURL('index.html') +
+        '#/sign-transaction/' +
+        content +
+        '/' +
+        mnemonic +
+        '/' +
+        keypairType +
+        '?url=' +
+        sender.origin +
+        '&tabId=' +
+        (sender.tab || {}).id,
       height: 600,
       width: 535,
       top: 50,

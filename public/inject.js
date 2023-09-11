@@ -5,6 +5,7 @@
   /** @typedef { import("./types").Message } Message */
   /** @typedef { import("./types").Commands } Commands */
   /** @typedef { import("./types").Account } Account */
+  /** @typedef { import('../src/global-components').SignReturn} SignReturn */
 
   class InjectHandler {
     /** @type { {[key: string]: ((data?: Message['data']) => void)[] }} */ _handlers = {}
@@ -221,8 +222,19 @@
       }
     }
 
-    async sign() {
-      console.log('[SIGN] event is not yet implemented.')
+    /**
+     * @param { string } content
+     * @param { string } mnemonic
+     * @param { 'sr25519' | 'ed25519'  } keypairType
+     * @returns { Promise<SignReturn> }
+     */
+    async signTransaction(content, mnemonic, keypairType) {
+      await this._hasAccessGuard()
+
+      return new Promise((res) => {
+        this.once('SIGN_TRANSACTION', res)
+        this.sendMessageToContent('SIGN_TRANSACTION', { content, mnemonic, keypairType })
+      })
     }
 
     async _hasAccessGuard() {

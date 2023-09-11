@@ -67,6 +67,10 @@ export const $router = createRouter({
     {
       path: '/select-decrypted-account/:networks',
       component: () => import('../popups/SelectDecryptedAccount.vue')
+    },
+    {
+      path: '/sign-transaction/:content/:mnemonic/:keypair',
+      component: () => import('../popups/SignTransaction.vue')
     }
   ]
 })

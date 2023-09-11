@@ -235,6 +235,11 @@
     sendResponse('ok')
   })
 
+  handler.onBackground('SIGN_TRANSACTION', ({ message, sendResponse }) => {
+    handler.sendMessageToInject('SIGN_TRANSACTION', message)
+    sendResponse('ok')
+  })
+
   handler.onInject('HAS_ACCESS', async () => {
     handler.sendMessageToInject('HAS_ACCESS', await handler.isAuth(window.location.origin))
   })
@@ -275,4 +280,12 @@
   handler.onInject('SELECT_DECRYPTED_ACCOUNT', (message) =>
     handler.sendMesssageToBackground('SELECT_DECRYPTED_ACCOUNT', message)
   )
+  handler.onInject('SIGN_TRANSACTION', (message) =>
+    handler.sendMesssageToBackground('SIGN_TRANSACTION', message)
+  )
 }
+
+// inject -> content -> background(extension) -> content -> inject
+// content -> inject/background
+// inject -> content
+// background -> content
