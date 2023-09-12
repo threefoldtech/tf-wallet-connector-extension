@@ -228,7 +228,7 @@
      * @param { 'sr25519' | 'ed25519'  } keypairType
      * @returns { Promise<SignReturn> }
      */
-    async signTransaction(content, mnemonic, keypairType) {
+    async sign(content, mnemonic, keypairType) {
       await this._hasAccessGuard()
 
       return new Promise((res) => {
