@@ -1,6 +1,9 @@
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
 import '@/assets/styles.scss'
+import { ThreefoldWalletConnectorApi } from '@threefold/extension_api'
+
+console.log(ThreefoldWalletConnectorApi)
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
