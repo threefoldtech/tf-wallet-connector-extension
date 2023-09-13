@@ -1,5 +1,5 @@
 {
-  "name": "tf-wallet-connector",
+  "name": "@threefold/tf-wallet-connector-extension",
   "version": "0.0.1-rc3",
   "private": false,
   "scripts": {
