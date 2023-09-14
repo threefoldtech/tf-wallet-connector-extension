@@ -1,0 +1,1 @@
+export type BusEvents = 'TF_WALLET_CONNECTOR_EXTENSION' | 'WELCOME'

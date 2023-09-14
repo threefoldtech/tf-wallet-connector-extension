@@ -30,6 +30,7 @@ function defineApiConfig() {
     ],
     build: {
       copyPublicDir: false,
+      emptyOutDir: true,
       outDir,
       lib: {
         entry: { api: resolve(__dirname, 'api/index.ts') },
@@ -41,11 +42,15 @@ function defineApiConfig() {
   })
 }
 
-function defineAppConfig() {
+function defineExtensionConfig() {
   return defineConfig({
     build: {
       copyPublicDir: true,
-      outDir: 'extension'
+      emptyOutDir: true,
+      outDir: 'extension',
+      rollupOptions: {
+        input: resolve(__dirname, 'index.html')
+      }
     },
     plugins: [vue(), nodePolyfills()],
     resolve: {
@@ -56,7 +61,30 @@ function defineAppConfig() {
   })
 }
 
+function defineBusConfig(name: string) {
+  return defineConfig({
+    build: {
+      copyPublicDir: false,
+      emptyOutDir: false,
+      outDir: 'extension',
+      rollupOptions: {
+        input: resolve(__dirname, 'bus', `${name}.ts`),
+        output: {
+          entryFileNames: `${name}.js`,
+          inlineDynamicImports: true
+        }
+      }
+    }
+  })
+}
+
 export default () => {
-  if (process.env.TARGET === 'API') return defineApiConfig()
-  return defineAppConfig()
+  // prettier-ignore
+  switch (process.env.TARGET) {
+    case 'API': return defineApiConfig()
+    case 'BACKGROUND': return defineBusConfig('background')
+    case 'CONTENT': return defineBusConfig('content')
+    case 'INJECT': return defineBusConfig('inject')
+    default: return defineExtensionConfig()
+  }
 }
