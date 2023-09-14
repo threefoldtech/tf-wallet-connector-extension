@@ -22,8 +22,8 @@ export async function sendMessageToContent(
   return chrome.tabs
     .sendMessage(id, {
       extension: window.$TF_WALLET_CONNECTOR_EXTENSION,
-      event,
-      data
+      event: 'FORWARD_MESSAGE_BUS',
+      data: { event, data }
     })
     .catch((error) => {
       /* Skip error */

@@ -1,4 +1,5 @@
 import { BusHandler, FileType } from './common'
+import { BusEvents } from './common/busEvents'
 
 class ContentHandler extends BusHandler {
   public constructor() {
@@ -13,11 +14,22 @@ class ContentHandler extends BusHandler {
 
 const contentHandler = new ContentHandler()
 
-console.log({ contentHandler })
+// Forwarding Bus
+contentHandler.addInjectEventListener<{ event: BusEvents; data?: any; error?: string }>(
+  'FORWARD_MESSAGE_BUS',
+  (message) => {
+    if (message) {
+      return contentHandler.sendToBackground(message.event, message.data, message.error)
+    }
+  }
+)
 
-contentHandler.addInjectEventListener('WELCOME', async (message) => {
-  console.log('[content]', 'from inject', message)
-  const msg = await contentHandler.sendToBackground('WELCOME', message)
-  console.log('[content]', 'from background', msg)
-  contentHandler.sendToInject('WELCOME', message)
-})
+contentHandler.addBackgroundEventListener<{ event: BusEvents; data?: any; error?: string }>(
+  'FORWARD_MESSAGE_BUS',
+  ({ message, sendResponse }) => {
+    sendResponse('ok')
+    if (message) {
+      return contentHandler.sendToInject(message.event, message.data, message.error)
+    }
+  }
+)

@@ -33,9 +33,12 @@ export abstract class BusHandler {
     const listenToInject = (event: Event) => {
       const { data: message } = event as unknown as { data: any }
       if (BusHandler.isExtensionMessage(message)) {
-        const handler = this.popEvent(this._injectHandlers[message.event])
+        if (message.error) {
+          throw new Error(message.error)
+        }
+        const handler = this._injectHandlers[message.event]?.[0]
         if (handler) {
-          return handler(message.data)
+          return handler(message.data, message.error)
         }
         console.warn(`Event of type(${message.event}) is not yet registered on inject handlers.`)
       }
@@ -54,9 +57,9 @@ export abstract class BusHandler {
       const listenToContent = (event: Event) => {
         const { detail } = event as CustomEvent<Message>
         if (BusHandler.isExtensionMessage(detail)) {
-          const handler = this.popEvent(this._contentHandlers[detail.event])
+          const handler = this._contentHandlers[detail.event]?.[0]
           if (handler) {
-            return handler(detail.data)
+            return (handler as InjectHandler)(detail.data, detail.error)
           }
           console.warn(`Event of type(${detail.event}) is not yet registered on content handlers.`)
         }
@@ -74,9 +77,9 @@ export abstract class BusHandler {
       sendResponse: InjectHandler
     ) => {
       if (BusHandler.isExtensionMessage(message)) {
-        const handler = this.popEvent(this._contentHandlers[message.event])
+        const handler = this._contentHandlers[message.event]?.[0]
         if (handler) {
-          return handler({ sender, sendResponse, message: message.data })
+          return handler({ sender, sendResponse, message: message.data, error: message.error })
         }
         console.warn(`Event of type(${message.event}) is not yet registered on content handlers.`)
       }
@@ -98,9 +101,9 @@ export abstract class BusHandler {
       sendResponse: InjectHandler
     ) => {
       if (BusHandler.isExtensionMessage(message)) {
-        const handler = this.popEvent(this._backgroundHandlers[message.event])
+        const handler = this._backgroundHandlers[message.event]?.[0]
         if (handler) {
-          return handler({ sender, sendResponse, message: message.data })
+          return handler({ sender, sendResponse, message: message.data, error: message.error })
         }
         console.warn(
           `Event of type(${message.event}) is not yet registered on background handlers.`
@@ -123,7 +126,10 @@ export abstract class BusHandler {
 
     const fn = this.onceHandler(
       handler,
-      () => this.deleteHandler(this._injectHandlers[event]!, fn),
+      () => {
+        console.log('deleting event', event)
+        this.deleteHandler(this._injectHandlers[event]!, fn)
+      },
       options?.once
     )
 
@@ -171,10 +177,10 @@ export abstract class BusHandler {
     return () => this.deleteHandler(this._backgroundHandlers[event]!, fn)
   }
 
-  public sendToInject(event: BusEvents, data?: any) {
+  public sendToInject(event: BusEvents, data?: any, error?: string) {
     BusHandler.assertFileType('sendToInject', this.type, FileType.Inject)
 
-    const message: Message = { extension: 'TF_WALLET_CONNECTOR_EXTENSION', event, data }
+    const message: Message = { extension: 'TF_WALLET_CONNECTOR_EXTENSION', event, data, error }
     return document.dispatchEvent(
       new CustomEvent('TF_WALLET_CONNECTOR_EXTENSION', {
         bubbles: true,
@@ -185,7 +191,11 @@ export abstract class BusHandler {
     )
   }
 
-  public sendToContent(event: BusEvents, data?: any, tabId?: number) {
+  public sendToContent(
+    event: 'FORWARD_MESSAGE_BUS',
+    data: { event: BusEvents; data?: any; error?: any },
+    tabId?: number
+  ) {
     BusHandler.assertFileType('sendToContent', this.type, FileType.Content)
 
     const message: Message = { extension: 'TF_WALLET_CONNECTOR_EXTENSION', event, data }
@@ -202,10 +212,10 @@ export abstract class BusHandler {
     })
   }
 
-  public sendToBackground(event: BusEvents, data?: any) {
+  public sendToBackground(event: BusEvents, data?: any, error?: string) {
     BusHandler.assertFileType('sendToBackground', this.type, FileType.Background)
 
-    const message: Message = { extension: 'TF_WALLET_CONNECTOR_EXTENSION', event, data }
+    const message: Message = { extension: 'TF_WALLET_CONNECTOR_EXTENSION', event, data, error }
     return chrome.runtime.sendMessage(message)
   }
 
@@ -218,23 +228,15 @@ export abstract class BusHandler {
     return false
   }
 
-  private onceHandler<T extends Function>(handler: T, cb: () => void, once?: boolean): T {
+  private onceHandler(handler: Function, cb: () => void, once?: boolean): any {
     if (!once) {
       return handler
     }
 
-    return ((...args: any[]) => {
+    return (...args: any[]) => {
       cb()
       handler(...args)
-    }) as unknown as T
-  }
-
-  private popEvent<T>(handlers?: T[]): T | null {
-    if (handlers?.length) {
-      const [handler] = handlers.splice(0, 1)
-      return handler
     }
-    return null
   }
 
   private async getTabId(tabId?: number | undefined): Promise<number | undefined> {
