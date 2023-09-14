@@ -1,14 +1,28 @@
 import { BusEvents } from './busEvents'
 
+export type NetworkOptions = string | string[]
+export type KeypairType = 'sr25519' | 'ed25519'
+
+export interface SignReturn {
+  publicKey: string
+  signature: string
+}
+
+export interface SignOptions {
+  content: string
+  mnemonic: string
+  keypairType: KeypairType
+}
+
 export interface RuntimeContext<T> {
-  message?: T
+  message: T
   error?: string
   sender: chrome.runtime.MessageSender
   sendResponse: (response?: any) => void
 }
 
 export type RuntimeHandler<T = unknown> = (ctx: RuntimeContext<T>) => void
-export type InjectHandler<T = unknown> = (message?: T, error?: string) => void
+export type InjectHandler<T = unknown> = (message: T, error?: string) => void
 
 export type HandlerSet<T> = { [event in BusEvents]?: T[] }
 

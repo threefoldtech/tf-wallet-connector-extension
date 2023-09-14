@@ -191,14 +191,14 @@ export abstract class BusHandler {
     )
   }
 
-  public sendToContent(
-    event: 'FORWARD_MESSAGE_BUS',
-    data: { event: BusEvents; data?: any; error?: any },
-    tabId?: number
-  ) {
+  public sendToContent(data: { event: BusEvents; data?: any; error?: any }, tabId?: number) {
     BusHandler.assertFileType('sendToContent', this.type, FileType.Content)
 
-    const message: Message = { extension: 'TF_WALLET_CONNECTOR_EXTENSION', event, data }
+    const message: Message = {
+      extension: 'TF_WALLET_CONNECTOR_EXTENSION',
+      event: 'FORWARD_MESSAGE_BUS',
+      data
+    }
 
     if (this.type === FileType.Inject) {
       return window.postMessage(message)
