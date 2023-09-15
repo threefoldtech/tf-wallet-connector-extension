@@ -1,6 +1,6 @@
 {
   "name": "@threefold/tf-wallet-connector-extension",
-  "version": "0.0.1-rc3",
+  "version": "0.0.1-rc4",
   "private": false,
   "license": "MIT",
   "scripts": {
