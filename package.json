@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p build:extension build:api",
-    "build:extension": "npm run build:app && run-p build:background build:content build:inject",
+    "compress:extension": "VERSION=`node -p \"require('./package.json').version\"` sh ./scripts/compress.sh",
+    "build:extension": "run-p build:app && run-p build:background build:content build:inject && run-p compress:extension",
     "build:app": "run-p type-check build-only",
     "build:api": "TARGET=API run-p build-only",
     "build:background": "TARGET=BACKGROUND run-p build-only",
