@@ -13,7 +13,11 @@ function defineApiConfig() {
   return defineConfig({
     plugins: [
       nodePolyfills(),
-      dts({ insertTypesEntry: true }),
+      dts({
+        insertTypesEntry: true,
+        rollupTypes: true,
+        copyDtsFiles: true
+      }),
       generateFile({
         type: 'json',
         output: './package.json',

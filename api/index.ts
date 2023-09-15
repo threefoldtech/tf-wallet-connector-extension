@@ -70,4 +70,4 @@ export class ThreefoldWalletConnectorApi {
   }
 }
 
-export type { KeypairType, NetworkOptions, PublicAccount, SignReturn, Unsubscribe }
+export { KeypairType, NetworkOptions, PublicAccount, SignReturn, Unsubscribe }
