@@ -32,8 +32,9 @@ function defineApiConfig() {
         }
       })
     ],
+    publicDir: './api/public',
     build: {
-      copyPublicDir: false,
+      copyPublicDir: true,
       emptyOutDir: true,
       outDir,
       lib: {

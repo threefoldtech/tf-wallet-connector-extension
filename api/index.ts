@@ -1,4 +1,5 @@
 import type {
+  AuthList,
   KeypairType,
   NetworkOptions,
   PublicAccount,
@@ -51,10 +52,18 @@ export class ThreefoldWalletConnectorApi {
   }
 
   public static listenToPublicAccounts(
-    handler: (accounts: PublicAccount[]) => void,
+    handler: (accounts: PublicAccount[], error?: string) => void,
     network?: NetworkOptions
   ): Unsubscribe {
     return ThreefoldWalletConnectorApi.handler.subscribeAccounts(handler, network)
+  }
+
+  public static getAuthList(): Promise<AuthList> {
+    return ThreefoldWalletConnectorApi.handler.getAuthList()
+  }
+
+  public static listenToAuthList(handler: (list: AuthList) => void): Unsubscribe {
+    return ThreefoldWalletConnectorApi.handler.subscribeAuthList(handler)
   }
 
   public static selectDecryptedAccount(network?: NetworkOptions): Promise<PublicAccount | null> {
@@ -70,4 +79,4 @@ export class ThreefoldWalletConnectorApi {
   }
 }
 
-export { KeypairType, NetworkOptions, PublicAccount, SignReturn, Unsubscribe }
+export { KeypairType, NetworkOptions, PublicAccount, SignReturn, Unsubscribe, AuthList }
