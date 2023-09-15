@@ -1,8 +1,8 @@
 import type { Account, AuthList } from '@/types'
-import { sendMessageToContent } from '.'
+import { sendMessageToContent } from './extension'
 
-const ACCOUNTS = window.$TF_WALLET_CONNECTOR_EXTENSION + '_ACCOUNTS'
-const AUTH_LIST = window.$TF_WALLET_CONNECTOR_EXTENSION + '_AUTH_LIST'
+const ACCOUNTS = 'TF_WALLET_CONNECTOR_EXTENSION_ACCOUNTS'
+const AUTH_LIST = 'TF_WALLET_CONNECTOR_EXTENSION_AUTH_LIST'
 
 class Storage {
   public get accounts(): Promise<Account[]> {
@@ -21,12 +21,12 @@ class Storage {
 
   public async setAccounts(accounts: Account[]): Promise<void> {
     await chrome.storage.sync.set({ [ACCOUNTS]: JSON.stringify(accounts) })
-    return sendMessageToContent('LISTEN_PUBLIC_ACCOUNTS')
+    return sendMessageToContent('NOTIFY_ACCOUNTS_CHANGED')
   }
 
   public async setAuthList(authList: AuthList): Promise<void> {
     await chrome.storage.sync.set({ [AUTH_LIST]: JSON.stringify(authList) })
-    return sendMessageToContent('LISTEN_AUTH_LIST')
+    return sendMessageToContent('NOTIFY_AUTH_LIST_CHANGED')
   }
 }
 

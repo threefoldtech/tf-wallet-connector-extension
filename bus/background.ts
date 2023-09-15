@@ -240,3 +240,10 @@ backgroundHandler.addContentEventListener<false, SignOptions>(
     }
   }
 )
+
+backgroundHandler.addContentEventListener<false>('GET_AUTH_LIST', async () => {
+  await backgroundHandler.sendToContent({
+    event: 'GET_AUTH_LIST',
+    data: await readAuthList()
+  })
+})

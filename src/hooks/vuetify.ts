@@ -14,7 +14,7 @@ export interface UseVuetifyTheme {
   load: () => void
 }
 export function useVuetifyTheme(): ComputedRef<UseVuetifyTheme> {
-  const KEY = window.$TF_WALLET_CONNECTOR_EXTENSION + '_THEME'
+  const KEY = 'TF_WALLET_CONNECTOR_EXTENSION_THEME'
   const theme = useTheme()
 
   return computed(() => {

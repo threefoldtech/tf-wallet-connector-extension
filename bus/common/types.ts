@@ -1,4 +1,4 @@
-import { BusEvents } from './busEvents'
+import type { BusEvents } from './busEvents'
 
 export type NetworkOptions = string | string[]
 export type KeypairType = 'sr25519' | 'ed25519'

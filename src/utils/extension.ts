@@ -1,4 +1,5 @@
 import type { Network } from '@/types'
+import type { BusEvents } from '../../bus/common/busEvents'
 
 let _tabId: number | undefined
 
@@ -8,10 +9,7 @@ export function initTabId(tabId?: number) {
   }
 }
 
-export async function sendMessageToContent(
-  event: keyof Window['$TF_WALLET_CONNECTOR_EXTENSION_CMDS'],
-  data?: any
-) {
+export async function sendMessageToContent(event: BusEvents, data?: any) {
   if (import.meta.env.DEV) {
     return Promise.resolve([])
   }
@@ -21,7 +19,7 @@ export async function sendMessageToContent(
 
   return chrome.tabs
     .sendMessage(id, {
-      extension: window.$TF_WALLET_CONNECTOR_EXTENSION,
+      extension: 'TF_WALLET_CONNECTOR_EXTENSION',
       event: 'FORWARD_MESSAGE_BUS',
       data: { event, data }
     })

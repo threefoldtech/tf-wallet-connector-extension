@@ -46,7 +46,7 @@ export default {
         JSON.stringify({
           encrypted: encryptedAccounts,
           accounts: [{ name: account.name, address: account.address, networks: account.networks }],
-          meta: { version: VERSION, extension: window.$TF_WALLET_CONNECTOR_EXTENSION }
+          meta: { version: VERSION, extension: 'TF_WALLET_CONNECTOR_EXTENSION' }
         })
       )
       router.push('/')

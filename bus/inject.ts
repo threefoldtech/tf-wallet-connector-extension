@@ -1,5 +1,12 @@
 import { BusHandler, ContentRuntime, FileType } from './common'
-import type { PublicAccount, NetworkOptions, KeypairType, SignReturn } from './common/types'
+import type {
+  PublicAccount,
+  NetworkOptions,
+  KeypairType,
+  SignReturn,
+  AuthList,
+  Unsubscribe
+} from './common/types'
 
 class InjectHandler extends BusHandler {
   public constructor() {
@@ -36,9 +43,21 @@ class InjectHandler extends BusHandler {
     })
   }
 
-  public listenToPublicAccounts() {} /* LISTEN_PUBLIC_ACCOUNTS */
+  public subscribeAccounts(
+    handler: (accounts: PublicAccount[], error?: string) => void,
+    network?: NetworkOptions
+  ): Unsubscribe {
+    const subscribeAccounts = () =>
+      this.getPublicAccounts(network)
+        .then(handler)
+        .catch((err) => handler([], err))
 
-  public selectAccount(): Promise<PublicAccount | null> {
+    subscribeAccounts()
+
+    return this.addContentEventListener('NOTIFY_ACCOUNTS_CHANGED', subscribeAccounts)
+  }
+
+  public selectAccount(network?: NetworkOptions): Promise<PublicAccount | null> {
     return new Promise((res, rej) => {
       this.addContentEventListener<true, PublicAccount | null>(
         'SELECT_ACCOUNT',
@@ -48,7 +67,7 @@ class InjectHandler extends BusHandler {
         },
         { once: true }
       )
-      this.sendToContent({ event: 'SELECT_ACCOUNT' })
+      this.sendToContent({ event: 'SELECT_ACCOUNT', data: network })
     })
   }
 
@@ -83,10 +102,29 @@ class InjectHandler extends BusHandler {
     })
   }
 
-  public getAuthList() {
-    return new Promise((res) => {})
+  public getAuthList(): Promise<AuthList> {
+    return new Promise((res, rej) => {
+      this.addContentEventListener<true, AuthList>(
+        'GET_AUTH_LIST',
+        (message, err) => {
+          if (err) return rej(err)
+          res(message)
+        },
+        { once: true }
+      )
+      this.sendToContent({ event: 'GET_AUTH_LIST' })
+    })
   }
-  public listenToAuthList() {} /* LISTEN_AUTH_LIST */
+  public subscribeAuthList(handler: (list: AuthList, err?: string) => void): Unsubscribe {
+    const subscribeAuthList = () =>
+      this.getAuthList()
+        .then(handler)
+        .catch((err) => handler({}, err))
+
+    subscribeAuthList()
+
+    return this.addContentEventListener('NOTIFY_AUTH_LIST_CHANGED', subscribeAuthList)
+  }
 
   public sign(
     content: string,

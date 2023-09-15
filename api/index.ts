@@ -1,127 +1,73 @@
-const TF_WALLET_CONNECTOR_EXTENSION = 'TF_WALLET_CONNECTOR_EXTENSION'
-const EXTENSION_HANDLER = TF_WALLET_CONNECTOR_EXTENSION + '_HANDLER'
+import type {
+  KeypairType,
+  NetworkOptions,
+  PublicAccount,
+  SignReturn,
+  Unsubscribe
+} from '../bus/common/types'
 
-export interface Account {
-  name: string
-  mnemonic: string
-  address: string
-  relay: string
-  ssh: string
-  twinId: number
-  visible: boolean
-}
+const key = 'TF_WALLET_CONNECTOR_EXTENSION_HANDLER'
 
-export interface PublicAccount {
-  name: string
-  mnemonic: string
-  address: string
-  encryptedMnemonic: boolean
-  metadata: { [network: string]: { twinId: string | null; ssh: string | null } }
-  networks: string[]
-}
-
-export interface SignReturn {
-  publicKey: string
-  signature: string
-}
-
-// prettier-ignore
 export class ThreefoldWalletConnectorApi {
-  public static isInstalledSync(): boolean {
-    if (document.readyState !== "complete") {
-      ThreefoldWalletConnectorApi._log(
-        "[isInstalledSync(warn)]",
-        "Document is not ready yet which might lead to unexpected results."
-      )
-    }
-    return EXTENSION_HANDLER in window
+  private static get handler(): any {
+    return window[key]
   }
 
-  public static isInstalled(): Promise<boolean> {
-    if (document.readyState === "complete") {
-      return Promise.resolve(ThreefoldWalletConnectorApi.isInstalledSync())
+  public static isInstalledSync(): boolean {
+    return key in window
+  }
+
+  public static isInstalled(): boolean | Promise<boolean> {
+    if (document.readyState === 'complete') {
+      return this.isInstalledSync()
     }
+
     return new Promise<boolean>((res) => {
-      window.addEventListener(
-        "load",
-        () => {
-          res(ThreefoldWalletConnectorApi.isInstalledSync())
-        },
-        { once: true }
-      )
+      window.addEventListener('load', res.bind(this, this.isInstalledSync()), { once: true })
     })
   }
 
   public static hasAccess(): Promise<boolean> {
-    return ThreefoldWalletConnectorApi
-      ._installGuard("hasAccess")
-      ._api
-      .hasAccess()
+    return ThreefoldWalletConnectorApi.handler.hasAccess()
   }
 
   public static requestAccess(): Promise<boolean> {
-    return ThreefoldWalletConnectorApi
-      ._installGuard("requestAccess")
-      ._api
-      .requestAccess()
+    return ThreefoldWalletConnectorApi.handler.requestAccess()
   }
 
-  public static selectAccount(networks?: string | string[]): Promise<PublicAccount | null> {
-    return ThreefoldWalletConnectorApi
-      ._installGuard('selectAccount')
-      ._api
-      .selectAccount(networks)
+  public static selectAccount(network?: NetworkOptions): Promise<PublicAccount | null> {
+    return ThreefoldWalletConnectorApi.handler.selectAccount(network)
   }
 
-  public static requestDecryptedAccount(decryptedMnemonic: string, networks?: string | string[]): Promise<string | null> {
-    return ThreefoldWalletConnectorApi
-      ._installGuard("requestDecryptedAccount")
-      ._api
-      .requestDecryptedAccount(decryptedMnemonic, networks)
+  public static requestDecryptedAccount(
+    mnemonic: string,
+    network?: NetworkOptions
+  ): Promise<PublicAccount | null> {
+    return ThreefoldWalletConnectorApi.handler.requestDecryptedAccount(mnemonic, network)
   }
 
-  public static getPublicAccounts(networks?: string | string[]): Promise<Account[]> {
-    return ThreefoldWalletConnectorApi
-      ._installGuard("getPublicAccounts")
-      ._api
-      .getPublicAccounts(networks)
+  public static getPublicAccounts(network?: NetworkOptions): Promise<PublicAccount[]> {
+    return ThreefoldWalletConnectorApi.handler.getPublicAccounts(network)
   }
 
-  public static listenToPublicAccounts(listener: (accounts: Account[]) => void): () => void {
-    return ThreefoldWalletConnectorApi
-      ._installGuard("listenToPublicAccounts")
-      ._api
-      .listenToPublicAccounts(listener)
+  public static listenToPublicAccounts(
+    handler: (accounts: PublicAccount[]) => void,
+    network?: NetworkOptions
+  ): Unsubscribe {
+    return ThreefoldWalletConnectorApi.handler.subscribeAccounts(handler, network)
   }
 
-  public static selectDecryptedAccount(networks?:  string | string[]): Promise<PublicAccount | null> {
-    return ThreefoldWalletConnectorApi
-      ._installGuard("selectDecryptedAccount")
-      ._api
-      .selectDecryptedAccount(networks)
+  public static selectDecryptedAccount(network?: NetworkOptions): Promise<PublicAccount | null> {
+    return ThreefoldWalletConnectorApi.handler.selectDecryptedAccount(network)
   }
 
-  public static sign(content: string, mnemonic: string, keypairType: 'sr25519' | 'ed25519'): Promise<SignReturn | null> {
-    return ThreefoldWalletConnectorApi
-      ._installGuard("sign")
-      ._api
-      .sign(content, mnemonic, keypairType)
-  }
-
-  private static get _api() {
-    return (window as any)[EXTENSION_HANDLER]
-  }
-
-  private static _installGuard(method: string) {
-    if (!ThreefoldWalletConnectorApi.isInstalledSync()) {
-      throw new Error(
-        `[${TF_WALLET_CONNECTOR_EXTENSION}] [${method}(error)] Threefold wallet connector extension is not installed yet.`
-      )
-    }
-    return ThreefoldWalletConnectorApi
-  }
-
-  private static _log(...args: string[]) {
-    console.log(`[${TF_WALLET_CONNECTOR_EXTENSION}]`, ...args)
+  public static sign(
+    content: string,
+    mnemonic: string,
+    keypairType: KeypairType
+  ): Promise<SignReturn | null> {
+    return ThreefoldWalletConnectorApi.handler.sign(content, mnemonic, keypairType)
   }
 }
+
+export type { KeypairType, NetworkOptions, PublicAccount, SignReturn, Unsubscribe }
