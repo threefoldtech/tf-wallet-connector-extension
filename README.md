@@ -1,52 +1,32 @@
-# tf-wallet-connector
+# Threefold wallet connector extension (@threefold/extension)
 
-This template should help get you started developing with Vue 3 in Vite.
+**`tf wallet connector`** is an extension which allows users to store their accounts (aka. mnemonic) in an encrypted way, providing an interface for websites to interact with after getting access permission from the user himself.
 
-## Recommended IDE Setup
+### Install extension locally
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+> Note: Make sure to have node (>= v.18)
 
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
-
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
-
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
+Then follow the steps:
 
 ```sh
+# Install yarn
+npm i -g yarn
+
+# Clone extension repo
+git clone https://github.com/threefoldtech/tf-wallet-connector-extension.git
+
+# Go to extension directory
+cd ./tf-wallet-connector-extension
+
+# Install project dependencies
 yarn
+
+# Build extension
+yarn build:extension
+
+# Hit to your chrome and find `manage extension` then enable *developer mode* and *load unpack* which should be the build output `tf-wallet-connector-extension/extension`
 ```
 
-### Compile and Hot-Reload for Development
+Now whenever you refresh your browser `window.TF_WALLET_CONNECTOR_EXTENSION_HANDLER` should have an instance of extension handler and helper methods.
 
-```sh
-yarn dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-yarn build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-yarn test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-yarn lint
-```
+For better development experience consider check `extension_api` which is also located in the extension itself. [More Details](https://github.com/threefoldtech/tf-wallet-connector-extension/blob/development/api/public/README.md)
