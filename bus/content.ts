@@ -5,7 +5,7 @@ class ContentHandler extends BusHandler {
   public constructor() {
     super(FileType.Content)
 
-    BusHandler.injectScripts(['cmds', 'inject'])
+    BusHandler.injectScripts(['inject'])
 
     this.listenToInject()
     this.listenToBackground()
