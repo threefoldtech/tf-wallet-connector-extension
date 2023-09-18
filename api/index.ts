@@ -24,7 +24,7 @@ export class ThreefoldWalletConnectorApi {
     }
 
     return new Promise<boolean>((res) => {
-      window.addEventListener('load', res.bind(this, this.isInstalledSync()), { once: true })
+      window.addEventListener('load', () => res(this.isInstalledSync()), { once: true })
     })
   }
 
