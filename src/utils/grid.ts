@@ -17,7 +17,7 @@ export async function loadGrid(
     return grid
   } catch (error) {
     if (!times || times <= 0) throw error
-    return loadGrid(mnemonic, network, times)
+    return loadGrid(mnemonic, network, times - 1)
   }
 }
 
