@@ -4,7 +4,7 @@ import { BackendStorageType, GridClient, NetworkEnv } from '@threefold/grid_clie
 export async function loadGrid(
   mnemonic: string,
   network: string = NetworkEnv.dev,
-  times?: number
+  times: number = 3
 ): Promise<GridClient> {
   try {
     const grid = new GridClient({

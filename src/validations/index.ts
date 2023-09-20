@@ -1,5 +1,4 @@
 import { validateMnemonic } from 'bip39'
-import { loadGrid } from '@/utils'
 
 export function isRequired(message: string) {
   return (value: string) => {
@@ -9,14 +8,6 @@ export function isRequired(message: string) {
 
 export function isValidMnemonic(mnemonic: string) {
   return validateMnemonic(mnemonic) ? undefined : "Mnemonic doesn't seem to be valid."
-}
-
-export async function isMnemonicHasTwin(mnemonic: string) {
-  try {
-    await loadGrid(mnemonic)
-  } catch (error) {
-    return (error as Error).message || 'Something went wrong while loading grid.'
-  }
 }
 
 export function isMatch(message: string, getToMatch: () => string) {

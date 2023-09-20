@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import md5 from 'md5'
 import Cryptr from 'cryptr'
 
-import { loadGrid, storage } from '@/utils'
+import { getBestNetwork, loadGrid, storage } from '@/utils'
 import type { Account } from '@/types'
 
 export interface WalletStore {
@@ -69,7 +69,7 @@ export const useWalletStore = defineStore('wallet:store', {
     },
 
     async addAccount(options: AddAccount) {
-      const grid = await loadGrid(options.mnemonic)
+      const grid = await loadGrid(options.mnemonic, getBestNetwork(options.networks))
       const cryptr = new Cryptr(md5(options.password), { saltLength: 10, pbkdf2Iterations: 10 })
       const account: Account = {
         name: options.name,
