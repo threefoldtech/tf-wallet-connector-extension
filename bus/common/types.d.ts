@@ -46,6 +46,7 @@ export interface PublicAccount {
   encryptedMnemonic: boolean
   metadata: { [network: string]: { twinId: string | null; ssh: string | null } }
   networks: string[]
+  keypairType: string
 }
 
 export interface AuthList {
