@@ -8,7 +8,7 @@
   >
     <v-textarea
       label="Public SSH Key"
-      v-model="ssh"
+      v-model.trim="ssh"
       no-resize
       :disabled="disabled || disableSSH"
       spellcheck="false"
