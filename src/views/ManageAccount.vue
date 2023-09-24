@@ -104,19 +104,20 @@ export default {
     const mnemonic = ref('')
     const loading = ref(false)
 
-    const account = walletStore.findAccount(route.params.mnemonic as string)
-
     function checkPassword() {
       const cryptr = new Cryptr(md5(password.value), { pbkdf2Iterations: 10, saltLength: 10 })
       try {
-        mnemonic.value = cryptr.decrypt(account.mnemonic)
+        mnemonic.value = cryptr.decrypt(route.params.mnemonic as string)
       } catch {
         passwordError.value = "Password you provided isn't valid"
       }
     }
 
     return {
-      account: computed(() => ({ ...account, mnemonic: mnemonic.value })),
+      account: computed(() => ({
+        ...walletStore.findAccount(route.params.mnemonic as string),
+        mnemonic: mnemonic.value
+      })),
       pageToManage,
       currentTab,
       password,

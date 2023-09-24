@@ -97,6 +97,7 @@ export default {
   setup() {
     const route = useRoute()
     const mnemonic = route.params.mnemonic as string
+    const keypairType = route.params.keypairType as string
     const networks = (route.params.networks as string).split('-')
 
     const loading = ref(true)
@@ -108,7 +109,8 @@ export default {
         mnemonic,
         address: grid.tfclient.address,
         networks,
-        ssh: await readSSH(grid)
+        ssh: await readSSH(grid),
+        keypairType
       } as Account
       await grid.disconnect()
       loading.value = false
@@ -135,7 +137,8 @@ export default {
         name: name.value,
         mnemonic,
         password: password.value,
-        networks
+        networks,
+        keypairType
       })
       addingAccount.value = false
       router.push('/')

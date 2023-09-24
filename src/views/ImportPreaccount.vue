@@ -3,7 +3,9 @@
     <template #title>Import account</template>
 
     <form
-      @submit.prevent="$router.push('/import-preaccount/' + mnemonic + '/' + networks.join('-'))"
+      @submit.prevent="
+        $router.push(`/import-preaccount/${mnemonic}/${keypairType}/${networks.join('-')}`)
+      "
     >
       <validate-field
         :value="mnemonic"
@@ -25,6 +27,8 @@
           :disabled="networkLoading"
         />
       </validate-field>
+
+      <v-select label="Keypair Type" :items="['sr25519', 'ed25519']" v-model="keypairType" />
 
       <join-networks
         :key="mnemonic"
@@ -67,6 +71,8 @@ export default {
     const mnemonicError = ref('')
     const mnemonicInput = useValidateField()
 
+    const keypairType = ref('sr25519')
+
     const ShowTermsDialog = ref(false)
 
     const networks = ref<string[]>([])
@@ -78,6 +84,8 @@ export default {
       mnemonicValid,
       mnemonicError,
       mnemonicInput,
+
+      keypairType,
 
       ShowTermsDialog,
 
