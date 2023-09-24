@@ -67,7 +67,8 @@ export default {
         name: account.name,
         mnemonic: account.mnemonic,
         networks: networks.value,
-        password: account.password
+        password: account.password,
+        keypairType: account.keypairType
       })
       loading.value = false
       router.push('/')

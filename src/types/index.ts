@@ -6,6 +6,7 @@ export interface Account {
   address: string
   ssh?: string
   visible: boolean
+  keypairType: string
   networks: Network[]
 }
 

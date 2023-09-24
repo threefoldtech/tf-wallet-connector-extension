@@ -52,9 +52,14 @@ export default {
     const networkValid = ref(false)
 
     async function next() {
-      const account = route.params as { name: string; mnemonic: string; password: string }
+      const account = route.params as {
+        name: string
+        keypairType: string
+        mnemonic: string
+        password: string
+      }
       router.push(
-        `/create-account-ssh/${account.mnemonic}/${account.name}/${
+        `/create-account-ssh/${account.mnemonic}/${account.keypairType}/${account.name}/${
           account.password
         }/${networks.value.join('-')}`
       )

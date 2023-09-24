@@ -23,6 +23,7 @@
       </template>
     </v-textarea>
 
+    <v-select label="Keypair Type" :items="['sr25519', 'ed25519']" v-model="keypairType" />
     <v-checkbox label="I have saved my mnemonic seed safely." color="secondary" v-model="saved" />
 
     <v-btn
@@ -32,7 +33,7 @@
       block
       size="large"
       :style="{ marginTop: '-20px' }"
-      @click="$router.push('/create-account/' + mnemonic)"
+      @click="$router.push(`/create-account/${mnemonic}/${keypairType}`)"
     >
       Next step
     </v-btn>
@@ -47,9 +48,10 @@ export default {
   name: 'CreateAccount',
   setup() {
     const mnemonic = generateMnemonic()
+    const keypairType = ref('sr25519')
     const saved = ref(false)
 
-    return { mnemonic, saved }
+    return { mnemonic, saved, keypairType }
   }
 }
 </script>

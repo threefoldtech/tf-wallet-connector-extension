@@ -28,15 +28,15 @@ export const $router = createRouter({
       component: () => import('../views/CreateAccount.vue')
     },
     {
-      path: '/create-account/:mnemonic',
+      path: '/create-account/:mnemonic/:keypairType',
       component: () => import('../views/CreateAccountPassword.vue')
     },
     {
-      path: '/create-account/:mnemonic/:name/:password',
+      path: '/create-account/:mnemonic/:keypairType/:name/:password',
       component: () => import('../views/CreateAccountTwin.vue')
     },
     {
-      path: '/create-account-ssh/:mnemonic/:name/:password/:networks',
+      path: '/create-account-ssh/:mnemonic/:keypairType/:name/:password/:networks',
       component: () => import('../views/CreateAccountSSH.vue')
     },
     {

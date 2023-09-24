@@ -104,21 +104,31 @@
     <v-divider />
 
     <v-card-item>
-      <v-chip
-        v-for="network in networks"
-        :key="network"
-        :color="isActiveNetwork(network) ? 'primary' : undefined"
-        size="small"
-        class="rounded-sm mr-1 font-weight-bold"
-      >
-        <span
-          class="text-capitalize"
-          :class="{
-            'text-decoration-line-through': !isActiveNetwork(network)
-          }"
-          >{{ network }}net</span
-        >
-      </v-chip>
+      <div class="d-flex justify-space-between align-start mt-1">
+        <div>
+          <v-chip
+            v-for="network in networks"
+            :key="network"
+            :color="isActiveNetwork(network) ? 'primary' : undefined"
+            size="small"
+            class="rounded-sm mr-1 mb-1 font-weight-bold"
+          >
+            <span
+              class="text-capitalize"
+              :class="{
+                'text-decoration-line-through': !isActiveNetwork(network)
+              }"
+            >
+              {{ network }}net
+            </span>
+          </v-chip>
+        </div>
+        <div>
+          <v-chip color="error" size="small" class="rounded-sm mr-1 font-weight-bold">
+            {{ account.keypairType }}
+          </v-chip>
+        </div>
+      </div>
     </v-card-item>
   </v-card>
 </template>
@@ -158,20 +168,7 @@ export default {
       walletStore.renameAccount(props.account.mnemonic, name.value)
     }
 
-    const networks = computed(() => {
-      const networkSet = new Set<string>(props.account.networks)
-      const nws = ['main', 'test', 'qa', 'dev'].filter((network) => networkSet.has(network))
-
-      const selectedNetworks = props.selectedNetworks
-      if (selectedNetworks) {
-        nws.sort((a, b) => {
-          const x = selectedNetworks.includes(a) ? 1 : 0
-          const y = selectedNetworks.includes(b) ? 1 : 0
-          return y - x
-        })
-      }
-      return nws
-    })
+    const networks = computed(() => props.account.networks)
 
     function isActiveNetwork(network: string): boolean {
       return props.selectedNetworks?.includes(network) ?? true

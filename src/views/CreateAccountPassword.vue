@@ -4,7 +4,9 @@
 
     <form
       @submit.prevent="
-        $router.push('/create-account/' + $route.params.mnemonic + '/' + name + '/' + password)
+        $router.push(
+          `/create-account/${$route.params.mnemonic}/${$route.params.keypairType}/${name}/${password}`
+        )
       "
     >
       <validate-field

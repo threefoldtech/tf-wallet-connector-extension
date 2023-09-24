@@ -14,6 +14,7 @@ export interface AddAccount {
   mnemonic: string
   networks: string[]
   password: string
+  keypairType: string
 }
 
 export const useWalletStore = defineStore('wallet:store', {
@@ -27,7 +28,8 @@ export const useWalletStore = defineStore('wallet:store', {
               mnemonic:
                 'aba3fa69120798f1a402d212cc2fe4f473fda3b90b24c4973a6e89870203b130ed36517d38701af9dedf128d1389fd6d7815103b83f40fc4c0e146ab4e01858d196f4562fe61896d68c6c511f09d6f0b2ee9f8710adfcd8cef82bbc605ea96a871e625e9aaba112ebf1bf0f99c3660c40f84654df8474ca4b3dd4428e17c',
               address: '5EPdJRyju5DS1xhBWzo6JzLek8MnbcwUEQVLaPZRDLuMMhUv',
-              networks: ['qa', 'dev']
+              networks: ['qa', 'dev'],
+              keypairType: 'ed25519'
             }
           ]
         : []
@@ -76,6 +78,7 @@ export const useWalletStore = defineStore('wallet:store', {
         visible: true,
         mnemonic: cryptr.encrypt(options.mnemonic),
         address: grid.tfclient.address,
+        keypairType: options.keypairType,
         networks: options.networks as any
       }
       this.$state.accounts.push(account)
