@@ -1,6 +1,6 @@
 {
   "name": "@threefold/extension",
-  "version": "0.0.1-rc7",
+  "version": "0.0.1-rc8",
   "private": false,
   "license": "MIT",
   "scripts": {
