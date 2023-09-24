@@ -131,6 +131,7 @@ export interface LoadPublicAccountOptions {
   mnemonic: string
   networks: string[]
   encryptedMnemonic: boolean
+  keypairType: string
 }
 export async function loadPublicAccount(options: LoadPublicAccountOptions): Promise<PublicAccount> {
   async function _loadAccountMetadata(): Promise<PublicAccount['metadata']> {
@@ -165,7 +166,7 @@ export async function loadPublicAccount(options: LoadPublicAccountOptions): Prom
     mnemonic: options.mnemonic,
     encryptedMnemonic: options.encryptedMnemonic,
     networks: options.networks as Network[],
-    // metadata: {}
-    metadata: await _loadAccountMetadata()
+    metadata: await _loadAccountMetadata(),
+    keypairType: options.keypairType
   }
 }

@@ -72,7 +72,8 @@ export default {
             address: selectedAccount.address,
             encryptedMnemonic: false,
             mnemonic,
-            networks
+            networks,
+            keypairType: selectedAccount.keypairType
           })
         )
         _done = true

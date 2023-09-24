@@ -137,7 +137,8 @@ export default {
             address: selectedAccount.value!.address,
             encryptedMnemonic: true,
             mnemonic: selectedAccount.value!.mnemonic,
-            networks: selectedNetworks ? selectedNetworks : selectedAccount.value!.networks
+            networks: selectedNetworks ? selectedNetworks : selectedAccount.value!.networks,
+            keypairType: selectedAccount.value!.keypairType
           })
         )
         window.onbeforeunload = null
@@ -157,7 +158,8 @@ export default {
             address: selectedAccount.value!.address,
             encryptedMnemonic: false,
             mnemonic,
-            networks: selectedNetworks ? selectedNetworks : selectedAccount.value!.networks
+            networks: selectedNetworks ? selectedNetworks : selectedAccount.value!.networks,
+            keypairType: selectedAccount.value!.keypairType
           })
         )
         window.onbeforeunload = null
