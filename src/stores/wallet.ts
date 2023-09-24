@@ -3,7 +3,7 @@ import md5 from 'md5'
 import Cryptr from 'cryptr'
 
 import { getBestNetwork, loadGrid, storage } from '@/utils'
-import type { Account } from '@/types'
+import type { Account, Network } from '@/types'
 
 export interface WalletStore {
   accounts: Account[]
@@ -27,7 +27,7 @@ export const useWalletStore = defineStore('wallet:store', {
               mnemonic:
                 'aba3fa69120798f1a402d212cc2fe4f473fda3b90b24c4973a6e89870203b130ed36517d38701af9dedf128d1389fd6d7815103b83f40fc4c0e146ab4e01858d196f4562fe61896d68c6c511f09d6f0b2ee9f8710adfcd8cef82bbc605ea96a871e625e9aaba112ebf1bf0f99c3660c40f84654df8474ca4b3dd4428e17c',
               address: '5EPdJRyju5DS1xhBWzo6JzLek8MnbcwUEQVLaPZRDLuMMhUv',
-              networks: ['qa', 'dev', 'test', 'main']
+              networks: ['qa', 'dev']
             }
           ]
         : []
@@ -79,6 +79,13 @@ export const useWalletStore = defineStore('wallet:store', {
         networks: options.networks as any
       }
       this.$state.accounts.push(account)
+      return storage.setAccounts(this.$state.accounts)
+    },
+
+    updateNetworks(address: string, networks: string[]) {
+      const index = this.accounts.findIndex((acc) => acc.address === address)
+      const newNetworks = Array.from(new Set([...this.accounts[index].networks, ...networks]))
+      this.$state.accounts[index].networks = newNetworks as Network[]
       return storage.setAccounts(this.$state.accounts)
     },
 

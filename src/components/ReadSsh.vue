@@ -58,12 +58,14 @@ export default {
     modelValue: String,
     valid: Boolean,
     disabled: { type: Boolean, default: () => false },
-    ssh: String
+    ssh: String,
+    loading: Boolean
   },
   emits: {
     'update:model-value': (network: string) => true || network,
     'update:valid': (valid: boolean) => true || valid,
-    'update:ssh': (ssh: string) => true || ssh
+    'update:ssh': (ssh: string) => true || ssh,
+    'update:loading': (loading: boolean) => true || loading
   },
   setup(props, { emit }) {
     const theme = useVuetifyTheme()
@@ -91,6 +93,8 @@ export default {
         emit('update:valid', !!network && !reading)
       })
     }
+
+    watch(reading, (r) => emit('update:loading', r), { immediate: true })
 
     return { theme, networkToReadFrom, sshKey, reading, read }
   }

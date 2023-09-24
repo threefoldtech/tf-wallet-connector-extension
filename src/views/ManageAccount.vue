@@ -1,5 +1,5 @@
 <template>
-  <ext-layout>
+  <ext-layout :remove-back="loading" :disable-actions="loading">
     <template #title>Manage account</template>
 
     <account-chip :account="account" remove-actions />
@@ -49,20 +49,29 @@
       </form>
 
       <template v-else>
-        <h3 class="mt-8 mb-2 text-display-1 font-weight-regular text-decoration-underline">
-          Manage Account Public SSH key
-        </h3>
-
-        <v-tabs align-tabs="center" color="primary" v-model="currentTab">
-          <v-tab>Update</v-tab>
-          <v-tab>Sync</v-tab>
-          <v-tab>Read</v-tab>
+        <v-tabs align-tabs="center" color="primary" v-model="pageToManage" :disabled="loading">
+          <v-tab>Public SSH Key</v-tab>
+          <v-tab>Networks</v-tab>
         </v-tabs>
-        <v-divider class="mb-4" />
 
-        <manage-ssh :account="account" v-if="currentTab === 0" />
-        <sync-ssh :account="account" v-if="currentTab === 1" />
-        <read-ssh :account="account" v-else-if="currentTab === 2" />
+        <template v-if="pageToManage === 0">
+          <h3 class="mt-8 mb-2 text-display-1 font-weight-regular text-decoration-underline">
+            Manage Account Public SSH key
+          </h3>
+
+          <v-tabs align-tabs="center" color="secondary" v-model="currentTab" :disabled="loading">
+            <v-tab>Read</v-tab>
+            <v-tab>Update</v-tab>
+            <v-tab>Sync</v-tab>
+          </v-tabs>
+          <v-divider class="mb-4" />
+
+          <read-ssh :account="account" v-model:loading="loading" v-if="currentTab === 0" />
+          <manage-ssh :account="account" v-model:loading="loading" v-if="currentTab === 1" />
+          <sync-ssh :account="account" v-model:loading="loading" v-if="currentTab === 2" />
+        </template>
+
+        <manage-networks :account="account" v-model:loading="loading" v-if="pageToManage === 1" />
       </template>
     </div>
   </ext-layout>
@@ -75,23 +84,25 @@ import md5 from 'md5'
 import Cryptr from 'cryptr'
 
 import { useWalletStore } from '@/stores'
-// import SshField from '@/components/SshField.vue'
 
 import ManageSsh from '@/components/ManageSsh.vue'
 import SyncSsh from '@/components/SyncSsh.vue'
 import ReadSsh from '@/components/ReadSsh.vue'
+import ManageNetworks from '@/components/ManageNetworks.vue'
 
 export default {
   name: 'ManageAccount',
-  components: { /* SshField */ ManageSsh, SyncSsh, ReadSsh },
+  components: { ManageSsh, SyncSsh, ReadSsh, ManageNetworks },
   setup() {
     const walletStore = useWalletStore()
     const route = useRoute()
+    const pageToManage = ref(0)
     const currentTab = ref(0)
     const password = ref('')
     const passwordError = ref('')
     const passwordValid = ref(false)
     const mnemonic = ref('')
+    const loading = ref(false)
 
     const account = walletStore.findAccount(route.params.mnemonic as string)
 
@@ -106,12 +117,14 @@ export default {
 
     return {
       account: computed(() => ({ ...account, mnemonic: mnemonic.value })),
+      pageToManage,
       currentTab,
       password,
       passwordError,
       passwordValid,
       checkPassword,
-      mnemonic
+      mnemonic,
+      loading
     }
   }
 }

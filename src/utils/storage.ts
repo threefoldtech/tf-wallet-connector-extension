@@ -6,6 +6,8 @@ const AUTH_LIST = 'TF_WALLET_CONNECTOR_EXTENSION_AUTH_LIST'
 
 class Storage {
   public get accounts(): Promise<Account[]> {
+    if (import.meta.env.DEV) return Promise.resolve([])
+
     return chrome.storage.sync
       .get(ACCOUNTS)
       .then((storage) => storage[ACCOUNTS])
@@ -13,6 +15,8 @@ class Storage {
   }
 
   public get authList(): Promise<AuthList> {
+    if (import.meta.env.DEV) return Promise.resolve({})
+
     return chrome.storage.sync
       .get(AUTH_LIST)
       .then((storage) => storage[AUTH_LIST])
@@ -20,11 +24,15 @@ class Storage {
   }
 
   public async setAccounts(accounts: Account[]): Promise<void> {
+    if (import.meta.env.DEV) return Promise.resolve()
+
     await chrome.storage.sync.set({ [ACCOUNTS]: JSON.stringify(accounts) })
     return sendMessageToContent('NOTIFY_ACCOUNTS_CHANGED')
   }
 
   public async setAuthList(authList: AuthList): Promise<void> {
+    if (import.meta.env.DEV) return Promise.resolve()
+
     await chrome.storage.sync.set({ [AUTH_LIST]: JSON.stringify(authList) })
     return sendMessageToContent('NOTIFY_AUTH_LIST_CHANGED')
   }

@@ -46,16 +46,3 @@ export async function getTabId() {
   const tab = await getTab()
   return tab?.id
 }
-
-export async function getNetwork(): Promise<Network> {
-  const tab = await getTab()
-  const url = tab?.url
-
-  if (url) {
-    if (url.includes('.dev.')) return 'dev'
-    if (url.includes('.test.')) return 'test'
-    if (url.includes('.qa.')) return 'qa'
-  }
-
-  return 'main'
-}

@@ -13,6 +13,7 @@
     v-model:valid="networkValid"
     :disabled="syncing"
     v-model:ssh="ssh"
+    @update:loading="$emit('update:loading', $event)"
   />
 
   <network-field
@@ -68,9 +69,13 @@ export default {
   name: 'SyncSsh',
   components: { ReadSsh },
   props: {
-    account: { type: Object as PropType<Account>, required: true }
+    account: { type: Object as PropType<Account>, required: true },
+    loading: Boolean
   },
-  setup(props) {
+  emits: {
+    'update:loading': (loading: boolean) => true || loading
+  },
+  setup(props, { emit }) {
     const network = ref<string>()
     const networkValid = ref(false)
     const ssh = ref('')
@@ -99,6 +104,8 @@ export default {
         return loadGrid(props.account.mnemonic, network).then((grid) => storeSSH(grid, ssh))
       }
     }
+
+    watch(syncing, (l) => emit('update:loading', l), { immediate: true })
 
     return {
       network,

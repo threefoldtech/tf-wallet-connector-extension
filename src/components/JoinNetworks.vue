@@ -10,6 +10,7 @@
     "
   >
     <network-field
+      :networks="$props.selectableNetworks"
       :disabled="disabled || joining"
       :disabledNetworks="Array.from(joinedNetworks)"
       :model-value="selectedNetworks"
@@ -66,7 +67,7 @@
 import { onMounted, ref, watch, computed, type PropType } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { getNetwork, checkAndCreateTwin, joinedNetwork } from '@/utils'
+import { checkAndCreateTwin, joinedNetwork, getBestNetwork } from '@/utils'
 
 import { useLogsService } from './NetworkLogs.vue'
 
@@ -81,7 +82,11 @@ export default {
     valid: Boolean,
     modelValue: Array as PropType<String[]>,
     disabled: { type: Boolean, default: () => false },
-    checkOnly: { type: Boolean, default: () => false }
+    checkOnly: { type: Boolean, default: () => false },
+    selectableNetworks: {
+      type: Array as PropType<string[]>,
+      default: () => ['main', 'test', 'qa', 'dev']
+    }
   },
   emits: {
     'update:loading': (loading: boolean) => true || loading,
@@ -101,7 +106,9 @@ export default {
       const networks = ((route.query.networks as string)?.trim() || '')
         .split(',')
         .filter((x) => !!x)
-      selectedNetworks.value = networks.length ? networks : [await getNetwork()]
+      selectedNetworks.value = networks.length
+        ? networks
+        : [getBestNetwork(props.selectableNetworks)]
     })
 
     function joinNetwork(network: string) {
@@ -118,7 +125,7 @@ export default {
     }
 
     const networkItems = computed(() => {
-      return ['main', 'test', 'qa', 'dev'].map((network) => {
+      return props.selectableNetworks.map((network) => {
         return {
           title: network[0].toUpperCase() + network.slice(1) + 'net',
           value: network,
