@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 import SshField from '@/components/SshField.vue'
 import type { Account } from '@/types'
@@ -45,7 +45,6 @@ export default {
   components: { SshField },
   setup() {
     const route = useRoute()
-    const router = useRouter()
     const walletStore = useWalletStore()
     const loading = ref(false)
 
@@ -71,7 +70,8 @@ export default {
         keypairType: account.keypairType
       })
       loading.value = false
-      router.push('/')
+      window.onbeforeunload = null
+      window.close()
     }
 
     return {

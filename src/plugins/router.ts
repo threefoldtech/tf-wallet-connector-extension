@@ -25,19 +25,19 @@ export const $router = createRouter({
     },
     {
       path: '/create-account',
-      component: () => import('../views/CreateAccount.vue')
+      component: () => import('../popups/CreateAccount.vue')
     },
     {
       path: '/create-account/:mnemonic/:keypairType',
-      component: () => import('../views/CreateAccountPassword.vue')
+      component: () => import('../popups/CreateAccountPassword.vue')
     },
     {
       path: '/create-account/:mnemonic/:keypairType/:name/:password',
-      component: () => import('../views/CreateAccountTwin.vue')
+      component: () => import('../popups/CreateAccountTwin.vue')
     },
     {
       path: '/create-account-ssh/:mnemonic/:keypairType/:name/:password/:networks',
-      component: () => import('../views/CreateAccountSSH.vue')
+      component: () => import('../popups/CreateAccountSSH.vue')
     },
     {
       path: '/import-preaccount',

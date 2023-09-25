@@ -56,7 +56,7 @@
             </v-tooltip>
           </template>
           <v-list>
-            <v-list-item to="/create-account">
+            <v-list-item @click="createNewAccount">
               <template #prepend>
                 <v-icon icon="mdi-account-plus" />
               </template>
@@ -167,10 +167,24 @@ export default {
       })
     }
 
+    function createNewAccount() {
+      const tabId = getTabId()
+      chrome.windows.create({
+        url: chrome.runtime.getURL('index.html') + '#/create-account?tabId=' + tabId,
+        height: 600,
+        width: 535,
+        top: 50,
+        left: 50,
+        focused: true,
+        type: 'popup'
+      })
+    }
+
     return {
       ThreefoldLogo,
       openRestoreAccounts,
-      theme
+      theme,
+      createNewAccount
     }
   }
 }
