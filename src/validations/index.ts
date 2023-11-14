@@ -1,4 +1,5 @@
 import { validateMnemonic } from 'bip39'
+import { isAddress } from '@polkadot/util-crypto'
 
 export function isRequired(message: string) {
   return (value: string) => {
@@ -7,7 +8,15 @@ export function isRequired(message: string) {
 }
 
 export function isValidMnemonic(mnemonic: string) {
-  return validateMnemonic(mnemonic) ? undefined : "Mnemonic doesn't seem to be valid."
+  if (
+    validateMnemonic(mnemonic) ||
+    (mnemonic.length === 66 && isAddress(mnemonic)) ||
+    (mnemonic.length === 64 && isAddress(`0x${mnemonic}`))
+  ) {
+    return
+  }
+
+  return "Mnemonic or Hex Seed doesn't seem to be valid."
 }
 
 export function isMatch(message: string, getToMatch: () => string) {

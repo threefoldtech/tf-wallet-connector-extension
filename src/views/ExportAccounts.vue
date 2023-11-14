@@ -42,7 +42,8 @@ export default {
           accounts: walletStore.accounts.map((account) => ({
             name: account.name,
             address: account.address,
-            networks: account.networks
+            networks: account.networks,
+            keypairType: account.keypairType
           })),
           meta: { version: VERSION, extension: 'TF_WALLET_CONNECTOR_EXTENSION' }
         })
