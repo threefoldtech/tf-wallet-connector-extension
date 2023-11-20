@@ -9,7 +9,10 @@
     >
       <validate-field
         :value="mnemonic"
-        :rules="[$validations.isRequired('Mnemonic is required.'), $validations.isValidMnemonic]"
+        :rules="[
+          $validations.isRequired('Mnemonic or Hex Seed is required.'),
+          $validations.isValidMnemonic
+        ]"
         required
         v-model:error="mnemonicError"
         v-model="mnemonicValid"
@@ -18,7 +21,7 @@
         :disabled="networkLoading"
       >
         <v-textarea
-          label="Your account mnemonic"
+          label="Your account mnemonic or hex seed"
           no-resize
           autofocus
           rows="2"

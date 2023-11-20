@@ -51,8 +51,8 @@ export function activateAccountAndCreateTwin(mnemonic: string, network: string =
 }
 
 export async function getMetadata(grid: GridClient): Promise<{ [key: string]: any }> {
-  const metadata = await grid.kvstore.get({ key: 'metadata' })
   try {
+    const metadata = await grid.kvstore.get({ key: 'metadata' })
     return JSON.parse(metadata)
   } catch {
     return {}

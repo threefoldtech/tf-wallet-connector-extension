@@ -72,6 +72,10 @@ export const useWalletStore = defineStore('wallet:store', {
 
     async addAccount(options: AddAccount) {
       const grid = await loadGrid(options.mnemonic, getBestNetwork(options.networks))
+      if (this.$state.accounts.some((acc) => acc.address === grid.tfclient.address)) {
+        return
+      }
+
       const cryptr = new Cryptr(md5(options.password), { saltLength: 10, pbkdf2Iterations: 10 })
       const account: Account = {
         name: options.name,
