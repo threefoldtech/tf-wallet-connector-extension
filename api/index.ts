@@ -18,14 +18,18 @@ export class ThreefoldWalletConnectorApi {
     return key in window
   }
 
-  public static isInstalled(): boolean | Promise<boolean> {
-    if (document.readyState === 'complete') {
-      return this.isInstalledSync()
+  public static async isInstalled(): Promise<boolean> {
+    const installed = ThreefoldWalletConnectorApi.isInstalledSync()
+
+    if (
+      document.readyState === 'complete' ||
+      (document.readyState === 'interactive' && installed)
+    ) {
+      return installed
     }
 
-    return new Promise<boolean>((res) => {
-      window.addEventListener('load', () => res(this.isInstalledSync()), { once: true })
-    })
+    await ThreefoldWalletConnectorApi._readyStateChange()
+    return ThreefoldWalletConnectorApi.isInstalled()
   }
 
   public static hasAccess(): Promise<boolean> {
@@ -76,6 +80,16 @@ export class ThreefoldWalletConnectorApi {
     keypairType: KeypairType
   ): Promise<SignReturn | null> {
     return ThreefoldWalletConnectorApi.handler.sign(content, mnemonic, keypairType)
+  }
+
+  private static _readyStateChange(): Promise<void> {
+    return new Promise((res) => {
+      if (document.readyState === 'complete') {
+        return res()
+      }
+
+      document.addEventListener('readystatechange', () => res(), { once: true })
+    })
   }
 }
 
